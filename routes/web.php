@@ -19,4 +19,5 @@ Route::get('/', function () {
 });
 Route::get('/message', [BotController::class, 'sendMessage'])->name('message');
 Route::post('/message', [BotController::class, 'sendQuestion'])->name('question');
-Route::get('/message', [BotController::class, 'setHook'])->name('hook');
+Route::get('/message/updates', [BotController::class, 'getUpdates'])->name('updates');
+Route::get('/message/callbacks', [BotController::class, 'getCallback'])->name('callbacks');

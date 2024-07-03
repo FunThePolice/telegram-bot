@@ -6,7 +6,7 @@ use GuzzleHttp\Psr7\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class QuestionWithPhotoResource extends JsonResource
+class MessageWithPhotoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -29,26 +29,25 @@ class QuestionWithPhotoResource extends JsonResource
                 'contents' => json_encode([
                     'inline_keyboard' => [
                         array(
-
                             array(
-                                'text' => $this->answer1['text'],
-                                'callback_data' => $this->answer1['true'] ?? '0',
+                                'text' => $this->answer_1['text'],
+                                'callback_data' => '/'.($this->answer_1['true'] ?? '0'),
                             ),
 
                             array(
-                                'text' => $this->answer2['text'],
-                                'callback_data' => $this->answer2['true'] ?? '0',
+                                'text' => $this->answer_2['text'],
+                                'callback_data' => '/'.($this->answer_2['true'] ?? '0'),
                             )
                         ),
                         array(
                             array(
-                                'text' => $this->answer3['text'],
-                                'callback_data' => $this->answer3['true'] ?? '0',
+                                'text' => $this->answer_3['text'],
+                                'callback_data' => '/'.($this->answer_3['true'] ?? '0'),
                             ),
 
                             array(
-                                'text' => $this->answer4['text'],
-                                'callback_data' => $this->answer4['true'] ?? '0',
+                                'text' => $this->answer_4['text'],
+                                'callback_data' => '/'.($this->answer_4['true'] ?? '0'),
                             ),
                         )
                     ]

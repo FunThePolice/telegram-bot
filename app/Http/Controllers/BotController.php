@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MessageResource;
+use App\Http\Resources\MessageWithPhotoResource;
 use App\Http\Resources\QuestionResource;
-use App\Http\Resources\QuestionWithPhotoResource;
+use App\Models\Question;
 use App\Services\TelegramBotService;
 use Illuminate\Http\Request;
 
 class BotController extends Controller
 {
-
-    const TELEGRAM_CHANNEL_ID = '-4194487285';
 
     public function index()
     {
@@ -28,16 +28,29 @@ class BotController extends Controller
         $botService = app(TelegramBotService::class);
 
         if ($request->file('image')) {
-            $botService->sendMessageWithPhoto(QuestionWithPhotoResource::make($request)->toArray($request));
+            $question = $botService->sendMessageWithPhoto(MessageWithPhotoResource::make($request)->toArray($request));
         } else {
-            $botService->sendMessage(QuestionResource::make($request)->toArray($request));
+            $question = $botService->sendMessage(MessageResource::make($request)->toArray($request));
         }
 
+        Question::create(array('message_id' => $question['result']['message_id']) + QuestionResource::make($request)->toArray($request));
     }
 
-    public function setHook()
+    public function getCallback()
     {
         $botService = app(TelegramBotService::class);
-        $botService->setHook();
+        return $botService->getCallback();
+    }
+
+    public function getUpdates()
+    {
+        $botService = app(TelegramBotService::class);
+        return $botService->getUpdates();
+    }
+
+    public function answerCallback()
+    {
+        $botService = app(TelegramBotService::class);
+        return $botService->answerCallback();
     }
 }

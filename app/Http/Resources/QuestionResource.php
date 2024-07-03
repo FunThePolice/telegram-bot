@@ -15,33 +15,22 @@ class QuestionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'text' => $this->text,
-            'reply_markup' => json_encode([
-                'inline_keyboard' => [
-                    array(
-                        array(
-                            'text' => $this->answer1['text'],
-                            'callback_data' => $this->answer1['true'] ?? '0',
-                        ),
-
-                        array(
-                            'text' => $this->answer2['text'],
-                            'callback_data' => $this->answer2['true'] ?? '0',
-                        )
-                    ),
-                    array(
-                        array(
-                            'text' => $this->answer3['text'],
-                            'callback_data' => $this->answer3['true'] ?? '0',
-                        ),
-
-                        array(
-                            'text' => $this->answer4['text'],
-                            'callback_data' => $this->answer4['true'] ?? '0',
-                        ),
-                    )
-                ]
-            ])
+            'body' => $this->text,
+            'answer_1' => $this->answer_1['text'],
+            'answer_2' => $this->answer_2['text'],
+            'answer_3' => $this->answer_3['text'],
+            'answer_4' => $this->answer_4['text'],
+            'correct_answer' => $this->getCorrectAnswer($request)
         ];
+    }
+
+    public function getCorrectAnswer(Request $request)
+    {
+        foreach ($request->all() as $item) {
+            if (is_array($item) && count($item) > 1) {
+                $answer = $item;
+            }
+        }
+        return $answer['text'];
     }
 }

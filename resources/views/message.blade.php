@@ -23,24 +23,24 @@
             </div>
         </div>
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer1[true]" value="{{true}}" aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answer_1[true]" value="{{true}}" aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer1[text]" aria-label="Text input with checkbox">
+        <input type="text" class="form-control" name="answer_1[text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer2[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answer_2[true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer2[text]" aria-label="Text input with checkbox">
+        <input type="text" class="form-control" name="answer_2[text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer3[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answer_3[true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer3[text]" aria-label="Text input with checkbox">
+        <input type="text" class="form-control" name="answer_3[text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer4[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answer_4[true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer4[text]" aria-label="Text input with checkbox">
+        <input type="text" class="form-control" name="answer_4[text]" aria-label="Text input with checkbox">
 
         <div class="col mb-5 mx-auto">
             <label for="images" class="form-label"></label>
@@ -50,10 +50,14 @@
             <button type="submit" class="btn btn-primary mb-3">Confirm</button>
         </div>
     </form>
-        <form action="{{route('hook')}}" method="GET">
-            @method('GET')
+        <form action="{{ route('callbacks') }}" method="GET">
             <div>
-                <button type="submit" class="btn btn-primary mb-3">Hook</button>
+                <button type="submit" class="btn btn-primary mb-3">Callback</button>
+            </div>
+        </form>
+        <form action="{{ route('updates') }}" method="GET">
+            <div>
+                <button type="submit" class="btn btn-primary mb-3">Updates</button>
             </div>
         </form>
 </div>
