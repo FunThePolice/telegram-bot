@@ -1,20 +1,26 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Data;
 
-use GuzzleHttp\Psr7\Utils;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Data\Contracts\ITelegramRequest;
 use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
 
-class MessageWithPhotoResource extends JsonResource
+class QuestionPhotoData extends Data implements ITelegramRequest
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
+
+    public string $text;
+
+    public string $photo;
+
+    public Collection $answers;
+
+    public string $method = 'POST';
+
+    public string $uri = 'sendPhoto';
+
+
+    public function getQuery(): array
     {
         return [
             'multipart' => [
@@ -24,18 +30,43 @@ class MessageWithPhotoResource extends JsonResource
                 ],
                 [
                     'name' => 'caption',
-                    'contents' => $this->text
+                    'contents' => $this->getText()
                 ],
                 [
                     'name' => 'photo',
-                    'contents' => fopen($this->image->path(), 'r')
+                    'contents' => fopen($this->getPhotoPath(), 'r')
                 ],
                 [
                     'name' => 'reply_markup',
-                    'contents' => $this->getReplyMarkUp(collect($request['answers']))
+                    'contents' => $this->getReplyMarkUp($this->answers)
                 ]
             ]
         ];
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getAnswers()
+    {
+
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
+    }
+
+    public function getPhotoPath(): string
+    {
+        return __DIR__ . '/../../storage/app/storage/images' . $this->photo;
+    }
+
+    public function getUri(): string
+    {
+        return $this->uri;
     }
 
     public function getReplyMarkUp(Collection $answers): bool|string
@@ -59,7 +90,6 @@ class MessageWithPhotoResource extends JsonResource
                     'callback_data' => $answer['true'] ?? '0'
                 ];
             }
-
         }
 
         return json_encode([

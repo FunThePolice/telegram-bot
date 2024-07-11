@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BotController;
+use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,10 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('message');
-});
+Route::get('/', [QuestionController::class, 'index'])->name('index');
+Route::post('/question', [QuestionController::class, 'create'])->name('store');
+Route::put('/question/{question}', [QuestionController::class, 'update'])->name('update');
+Route::delete('/question/{question}', [QuestionController::class, 'delete'])->name('delete');
 Route::get('/message', [BotController::class, 'sendMessage'])->name('message');
-Route::post('/message', [BotController::class, 'sendQuestion'])->name('question');
-Route::get('/message/updates', [BotController::class, 'getUpdates'])->name('updates');
-Route::get('/message/callbacks', [BotController::class, 'getCallback'])->name('callbacks');
+Route::post('/message', [BotController::class, 'createQuestion'])->name('question');
+Route::get('/message/update', [BotController::class, 'getUpdate'])->name('update');
+Route::post('/message', [BotController::class, 'sendQuestion'])->name('control.message');

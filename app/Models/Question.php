@@ -12,8 +12,15 @@ class Question extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = ['answers' => 'array'];
+
     public function answers(): HasMany
     {
         return $this->hasMany(Answer::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
     }
 }

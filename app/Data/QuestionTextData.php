@@ -1,27 +1,42 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Data;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Data\Contracts\ITelegramRequest;
+
 use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
 
-class MessageResource extends JsonResource
+class QuestionTextData extends Data implements ITelegramRequest
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
+
+    public Collection $answers;
+
+    public string $text;
+
+    public string $method = 'GET';
+
+    public string $uri = 'sendMessage';
+
+    public function getQuery(): array
     {
         return [
             'query' => [
                 'chat_id' => config('telegramBot.channel_id'),
                 'text' => $this->text,
-                'reply_markup' => $this->getReplyMarkUp(collect($request['answers']))
+                'reply_markup' => $this->getReplyMarkUp($this->answers)
             ]
         ];
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getUri(): string
+    {
+        return $this->uri;
     }
 
     public function getReplyMarkUp(Collection $answers): bool|string
@@ -52,4 +67,5 @@ class MessageResource extends JsonResource
             'inline_keyboard' => collect([$firstLayer, $secondLayer])->filter()
         ]);
     }
+
 }
