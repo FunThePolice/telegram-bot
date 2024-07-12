@@ -15,33 +15,33 @@
     <div class="input-group justify-content-center">
     <form action="{{ route('store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        @method('Post')
         <div class="input-group-text mb-3">
             <div class="mt-5 mx-auto">
                 <label class="form-label" for="text">Message:</label>
                 <textarea class="form-control" name="text" id="text" type="text"></textarea>
             </div>
         </div>
+        <div class="input-group">
         <div class="input-group-text">
             <input class="form-check-input mt-0" type="checkbox" name="answers[1][true]" value="{{true}}" aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answers[1][text]" aria-label="Text input with checkbox">
+        <input id="answer_1" type="text" class="form-control" name="answers[1][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
             <input class="form-check-input mt-0" type="checkbox" name="answers[2][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answers[2][text]" aria-label="Text input with checkbox">
+        <input id="answer_2" type="text" class="form-control" name="answers[2][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
             <input class="form-check-input mt-0" type="checkbox" name="answers[3][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answers[3][text]" aria-label="Text input with checkbox">
+        <input id="answer_3" type="text" class="form-control" name="answers[3][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
             <input class="form-check-input mt-0" type="checkbox" name="answers[4][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answers[4][text]" aria-label="Text input with checkbox">
-
+        <input id="answer_4" type="text" class="form-control" name="answers[4][text]" aria-label="Text input with checkbox">
+        </div>
         <div class="col mb-5 mx-auto">
             <label for="image" class="form-label"></label>
             <input class="form-control" name="image" type="file" id="image"/>
@@ -104,13 +104,6 @@
             @endforeach
             </tbody>
         </table>
-        <form action="{{ route('control.message') }}" method="post" enctype="multipart/form-data">
-        @csrf
-        @method('Post')
-            <div>
-                <button type="submit" class="btn btn-primary mb-3">Confirm</button>
-            </div>
-        </form>
 </div>
 </div>
 

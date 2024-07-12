@@ -40,11 +40,9 @@ class CallbackAnswerData extends Data implements ITelegramRequest
 
     public function getCallbackText(): string
     {
-        if ($this->isCorrect === true) {
-            return sprintf('%s: Right answer!', $this->userName);
-        } else {
-            return sprintf('%s: Wrong answer!/n', $this->userName);
-        }
+        return $this->isCorrect ?
+            sprintf('%s: Right answer!', $this->userName):
+            sprintf('%s: Wrong answer!', $this->userName);
     }
 
 }

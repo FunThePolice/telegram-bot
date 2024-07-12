@@ -38,11 +38,11 @@ class CallbackUpdateData extends Data
         return $this->userId;
     }
 
-    public function getCallbackData(): bool|string
+    public function getCallbackData(): int|string
     {
         return match ($this->callbackData) {
-            '0' => false,
-            '1' => true,
+            '0' => 0,
+            '1' => 1,
             default => $this->callbackData,
         };
     }

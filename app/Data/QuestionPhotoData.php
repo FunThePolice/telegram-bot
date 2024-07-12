@@ -2,12 +2,14 @@
 
 namespace App\Data;
 
+use App\Data\Concerns\GetsReplyMarkup;
 use App\Data\Contracts\ITelegramRequest;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
 class QuestionPhotoData extends Data implements ITelegramRequest
 {
+    use GetsReplyMarkup;
 
     public string $text;
 
@@ -49,11 +51,6 @@ class QuestionPhotoData extends Data implements ITelegramRequest
         return $this->method;
     }
 
-    public function getAnswers()
-    {
-
-    }
-
     public function getText(): string
     {
         return $this->text;
@@ -61,7 +58,7 @@ class QuestionPhotoData extends Data implements ITelegramRequest
 
     public function getPhotoPath(): string
     {
-        return __DIR__ . '/../../storage/app/storage/images' . $this->photo;
+        return config('telegramBot.images_path') . $this->photo;
     }
 
     public function getUri(): string
@@ -69,31 +66,4 @@ class QuestionPhotoData extends Data implements ITelegramRequest
         return $this->uri;
     }
 
-    public function getReplyMarkUp(Collection $answers): bool|string
-    {
-        $filtered = $answers->filter(function ($answer) {
-            return $answer['text'] != null;
-        });
-
-        $firstLayer = [];
-        $secondLayer = [];
-        foreach ($filtered as $answer) {
-
-            if (count($firstLayer) < 2) {
-                $firstLayer[] = [
-                    'text' => $answer['text'],
-                    'callback_data' => $answer['true'] ?? '0'
-                ];
-            } else {
-                $secondLayer[] = [
-                    'text' => $answer['text'],
-                    'callback_data' => $answer['true'] ?? '0'
-                ];
-            }
-        }
-
-        return json_encode([
-            'inline_keyboard' => collect([$firstLayer, $secondLayer])->filter()
-        ]);
-    }
 }

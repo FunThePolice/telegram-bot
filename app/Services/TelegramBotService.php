@@ -6,7 +6,9 @@ use App\Data\Contracts\ITelegramRequest;
 use App\Data\CallbackUpdateData;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Collection;
+use PHPUnit\Event\RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 
 class TelegramBotService
@@ -22,7 +24,7 @@ class TelegramBotService
     /**
      * @throws GuzzleException
      */
-    public function sendRequest(ITelegramRequest $requestData): Collection|CallbackUpdateData|bool
+    public function sendRequest(ITelegramRequest $requestData)
     {
         $response = $this->client->request(
             $requestData->getMethod(),
@@ -30,79 +32,52 @@ class TelegramBotService
             $requestData->getQuery()
         );
 
-        $result = Collection::make();
         if ($response->getStatusCode() == 200) {
-            return $this->processResponse($response);
-        }
-        return $result;
-    }
+            $responseData = collect(json_decode($response->getBody(), true));
 
-    public function processResponse(ResponseInterface $response): CallbackUpdateData|Collection|bool
-    {
-        $responseData = collect(json_decode($response->getBody()->getContents(), true));
-
-        $result = Collection::make();
-
-        if ($responseData->has('result') && !empty($responseData['result'])) {
-            $data = $responseData['result'];
-
-            if (is_bool($data)) {
-                return true;
+            if (!is_null($responseData['result']) && !empty($responseData['result'])) {
+                return collect($responseData['result'])->first();
+                }
             }
 
-            $result = collect(array_shift($data));
-
-            switch ($result) {
-                case ($result->has('callback_query')):
-
-                    $callback = $result['callback_query'];
-
-                    return CallbackUpdateData::from([
-                        'updateId' => $result['update_id'],
-                        'userName' => $callback['from']['first_name'],
-                        'userId' => $callback['from']['id'],
-                        'callbackData' => $callback['data'],
-                        'messageId' => $callback['message']['message_id'],
-                        'callbackQueryId' => $callback['id'],
-                        'replyMarkup' => $callback['message']['reply_markup'],
-                        'messageText' => $callback['message']['text'],
-                    ]);
-
-                    case ($result->has('message')):
-                        return $responseData['result']['message_id'];
-            }
-            return $result;
-        }
-
-        return $result;
+        throw new RuntimeException('Bad Response');
     }
 
-    public function sendControlMessage(): void
+    public function getUpdates(ITelegramRequest $requestData): CallbackUpdateData
     {
-        $this->client->request('GET', 'sendMessage' , [
-            'query' => [
-                'chat_id' => config('telegramBot.channel_id'),
-                'text' => 'This is control message',
-                'reply_markup' => json_encode([
-                    "inline_keyboard" => [
-                        [
-                            [
-                                "text" => "Start",
-                                "callback_data" => "start"
-                            ],
-                            [
-                                "text" => "Top",
-                                "callback_data" => "top"
-                            ],
-                            [
-                                "text" => "Finish",
-                                "callback_data" => "finish"
-                            ]
-                        ]
-                    ]
-                ])
-            ]
+        $result = $this->sendRequest($requestData);
+
+        $callback = $result['callback_query'];
+
+        return CallbackUpdateData::from([
+            'updateId' => $result['update_id'],
+            'userName' => $callback['from']['first_name'],
+            'userId' => $callback['from']['id'],
+            'callbackData' => $callback['data'],
+            'messageId' => $callback['message']['message_id'],
+            'callbackQueryId' => $callback['id'],
+            'replyMarkup' => $callback['message']['reply_markup'],
+            'messageText' => $callback['message']['text'],
         ]);
     }
 
+    public function sendMessage(ITelegramRequest $requestData)
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    public function sendPhoto(ITelegramRequest $requestData)
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    public function answerCallbackQuery(ITelegramRequest $requestData)
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    public function editMessageText(ITelegramRequest $requestData)
+    {
+        return $this->sendRequest($requestData);
+    }
 }

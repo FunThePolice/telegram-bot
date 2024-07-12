@@ -5,12 +5,10 @@ namespace App\Data;
 use App\Data\Contracts\ITelegramRequest;
 use Spatie\LaravelData\Data;
 
-class TelegramRequestEditData extends Data implements ITelegramRequest
+class RequestEditData extends Data implements ITelegramRequest
 {
 
     public int $messageId;
-
-    public string $replyMarkUp;
 
     public string $messageText;
 
@@ -22,10 +20,9 @@ class TelegramRequestEditData extends Data implements ITelegramRequest
     {
         return [
             'query' => [
-                'chat_id' => config('telegram.channel_id'),
+                'chat_id' => config('telegramBot.channel_id'),
                 'message_id' => $this->messageId,
                 'text' => $this->messageText,
-                'reply_markup' => $this->replyMarkUp
             ]
         ];
     }

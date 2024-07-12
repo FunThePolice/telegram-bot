@@ -2,11 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Data\Contracts\ITelegramRequest;
 use App\Data\MessageTextData;
 use App\Data\QuestionPhotoData;
 use App\Data\QuestionTextData;
 use App\Data\CallbackAnswerData;
-use App\Data\TelegramRequestEditData;
+use App\Data\RequestEditData;
 use App\Data\RequestUpdateData;
 use App\Data\CallbackUpdateData;
 use App\Models\Answer;
@@ -38,40 +39,29 @@ class TickChat extends Command
     public function handle()
     {
         $botService = app(TelegramBotService::class);
-        $update = $botService->sendRequest(
+        $updateResponse = $botService->getUpdates(
             new RequestUpdateData('callback_query')
         );
 
-        if ($update instanceof CallbackUpdateData) {
-            $callbackData = $update->getCallbackData();
+        if (!$updateResponse instanceof CallbackUpdateData) {
+            return;
+        }
 
-            switch ($callbackData) {
+        $callbackData = $updateResponse->getCallbackData();
 
-                case ('start'):
+        switch ($callbackData) {
 
-                    $questions = Question::all()->shuffle();
-                    foreach ($questions as $question) {
+            case ('start'):
 
-                        if ($question->images()->get()->isEmpty()) {
-                            $data = QuestionTextData::from([
-                                'answers' => collect(json_decode($question->answers, true)),
-                                'text' => $question->body,
-                            ]);
-                        } else {
-                            $data =  QuestionPhotoData::from([
-                                'answers' => collect($question->answers),
-                                'text' => $question->body,
-                                'photo' => $question->images()->first()->name,
-                            ]);
-                        }
-
-                        $botService->sendRequest($data);
-                    }
-                    break;
+                $questions = Question::with('images')->get()->shuffle();
+                foreach ($questions as $question) {
+                    $botService->sendMessage($this->getQuestionData($question));
+                }
+                break;
 
                 case ('finish'):
 
-                    $rightAnswersCount = Answer::where('user_name', $update->getUserName())
+                    $rightAnswersCount = Answer::where('user_name', $updateResponse->getUserName())
                         ->where('is_correct', true)
                         ->get()
                         ->count();
@@ -79,16 +69,16 @@ class TickChat extends Command
                     $questionsCount = Question::all()->count();
 
                     Score::create([
-                        'user_name' => $update->getUserName(),
+                        'user_name' => $updateResponse->getUserName(),
                         'score' => $rightAnswersCount,
                         'max_score' => $questionsCount,
                     ]);
 
-                    $botService->sendRequest(MessageTextData::from([
+                    $botService->sendMessage(MessageTextData::from([
                         'text' => sprintf('Your score is: %s/%s', $rightAnswersCount, $questionsCount),
                     ]));
 
-                    Answer::where('user_name', $update->getUserName())->delete();
+                    Answer::where('user_name', $updateResponse->getUserName())->delete();
                     break;
 
                 case ('top'):
@@ -101,35 +91,56 @@ class TickChat extends Command
                         $texts[] = $text;
                     }
 
-                    $botService->sendRequest(MessageTextData::from([
+                    $botService->sendMessage(MessageTextData::from([
                         'text' => implode(",", $texts),
                     ]));
                     break;
 
                 default:
 
-                    $question = Question::where('body', $update->getMessageText())
+                    $question = Question::where('body', $updateResponse->getMessageText())
                         ->get()
                         ->first();
 
                     $question->answers()
                         ->create([
-                            'user_name' => $update->getUserName(),
-                            'user_id' => $update->getUserId(),
-                            'is_correct' => (bool) $update->getCallbackData(),
+                            'user_name' => $updateResponse->getUserName(),
+                            'user_id' => $updateResponse->getUserId(),
+                            'is_correct' => (bool) $updateResponse->getCallbackData(),
                         ]);
 
-                    $botService->sendRequest(CallbackAnswerData::from([
-                        'callbackId' => $update->getCallbackQueryId(),
-                        'isCorrect' => (bool) $update->getCallbackData(),
-                        'userName' => $update->getUserName(),
+                    $botService->answerCallbackQuery(CallbackAnswerData::from([
+                        'callbackId' => $updateResponse->getCallbackQueryId(),
+                        'isCorrect' => (bool) $updateResponse->getCallbackData(),
+                        'userName' => $updateResponse->getUserName(),
                     ]));
+
+                    $botService->editMessageText(RequestEditData::from([
+                        'messageId' => $updateResponse->getMessageId(),
+                        'messageText' => $updateResponse->getMessageText(),
+                    ]));
+
                     break;
 
             }
-            file_put_contents(config('telegramBot.cursorPath'), $update->getUpdateId() + 1);
-
-        }
+            file_put_contents(config('telegramBot.cursorPath'), $updateResponse->getUpdateId() + 1);
 
     }
+
+    public function getQuestionData(Question $question): ITelegramRequest
+    {
+
+        return $question->images->isEmpty() ?
+            $data = QuestionTextData::from([
+                'answers' => collect(json_decode($question->answers, true)),
+                'text' => $question->body,
+                ]) :
+            $data =  QuestionPhotoData::from([
+                'answers' => collect($question->answers),
+                'text' => $question->body,
+                'photo' => $question->images()->first()->name,
+                ]);
+
+    }
+
 }

@@ -1,33 +1,16 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Data\Concerns;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
 
-class MessageResource extends JsonResource
+trait GetsReplyMarkup
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(Request $request): array
-    {
-        return [
-            'query' => [
-                'chat_id' => config('telegramBot.channel_id'),
-                'text' => $this->text,
-                'reply_markup' => $this->getReplyMarkUp(collect($request['answers']))
-            ]
-        ];
-    }
 
-    public function getReplyMarkUp(Collection $answers): bool|string
+    public function getReplyMarkUp(Collection $answers): string
     {
         $filtered = $answers->filter(function ($answer) {
-            return $answer['text'] != null;
+            return $answer['text'] !== null;
         });
 
         $firstLayer = [];
@@ -47,9 +30,9 @@ class MessageResource extends JsonResource
             }
 
         }
-
         return json_encode([
             'inline_keyboard' => collect([$firstLayer, $secondLayer])->filter()
         ]);
     }
+
 }

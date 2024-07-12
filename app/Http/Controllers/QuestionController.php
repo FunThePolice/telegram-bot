@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\FiltersAnswers;
 use App\Http\Requests\QuestionRequest;
-use App\Http\Resources\QuestionResource;
 use App\Models\Question;
 use App\Services\FileService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
+use FiltersAnswers;
 
-    public function index()
+    public function index(): View
     {
         $questions = Question::all();
         return view('message', compact('questions'));
@@ -20,7 +21,11 @@ class QuestionController extends Controller
 
     public function create(QuestionRequest $request)
     {
-        $question = Question::create(QuestionResource::make($request)->resolve());
+        $question = Question::create([
+            'body' => $request->text,
+            'answers' => $this->filterAnswers($request->answers),
+            'correct_answer' => $this->getCorrectAnswer($request->answers)
+        ]);
 
         if ($request->hasFile('image')) {
             FileService::storeRelatedImage($request->file('image'), $question);
