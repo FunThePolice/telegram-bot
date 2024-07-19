@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Requests;
 
 use App\Data\Contracts\ITelegramRequest;
 use Spatie\LaravelData\Data;

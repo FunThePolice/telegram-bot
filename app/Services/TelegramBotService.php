@@ -2,18 +2,16 @@
 
 namespace App\Services;
 
+use App\Concerns\HandlesResponse;
 use App\Data\Contracts\ITelegramRequest;
-use App\Data\CallbackUpdateData;
+use App\Data\Contracts\ITelegramResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Collection;
 use PHPUnit\Event\RuntimeException;
-use Psr\Http\Message\ResponseInterface;
 
 class TelegramBotService
 {
-
+use HandlesResponse;
     protected Client $client;
 
     public function __construct(Client $client)
@@ -36,29 +34,17 @@ class TelegramBotService
             $responseData = collect(json_decode($response->getBody(), true));
 
             if (!is_null($responseData['result']) && !empty($responseData['result'])) {
-                return collect($responseData['result'])->first();
+                return collect($responseData['result']);
                 }
             }
 
-        throw new RuntimeException('Bad Response');
+        throw new RuntimeException('Bad Response: update is empty');
     }
 
-    public function getUpdates(ITelegramRequest $requestData): CallbackUpdateData
+    public function getUpdates(ITelegramRequest $requestData): ITelegramResponse
     {
         $result = $this->sendRequest($requestData);
-
-        $callback = $result['callback_query'];
-
-        return CallbackUpdateData::from([
-            'updateId' => $result['update_id'],
-            'userName' => $callback['from']['first_name'],
-            'userId' => $callback['from']['id'],
-            'callbackData' => $callback['data'],
-            'messageId' => $callback['message']['message_id'],
-            'callbackQueryId' => $callback['id'],
-            'replyMarkup' => $callback['message']['reply_markup'],
-            'messageText' => $callback['message']['text'],
-        ]);
+        return $this->handleResponse($result);
     }
 
     public function sendMessage(ITelegramRequest $requestData)
@@ -77,6 +63,11 @@ class TelegramBotService
     }
 
     public function editMessageText(ITelegramRequest $requestData)
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    public function sendPoll(ITelegramRequest $requestData)
     {
         return $this->sendRequest($requestData);
     }

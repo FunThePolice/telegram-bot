@@ -19,7 +19,7 @@ use FiltersAnswers;
         return view('message', compact('questions'));
     }
 
-    public function create(QuestionRequest $request)
+    public function create(QuestionRequest $request): RedirectResponse
     {
         $question = Question::create([
             'body' => $request->text,
@@ -34,7 +34,7 @@ use FiltersAnswers;
         return redirect()->route('index');
     }
 
-    public function update(QuestionRequest $request, Question $question)
+    public function update(QuestionRequest $request, Question $question): RedirectResponse
     {
         $question->update($request->except('image'));
 

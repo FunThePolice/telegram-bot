@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         //$schedule->command('tick-chat')->everySecond();
+        //$schedule->command('poll-timer')->everySecond();
     }
 
     /**

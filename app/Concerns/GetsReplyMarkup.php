@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data\Concerns;
+namespace App\Concerns;
 
 use Illuminate\Support\Collection;
 

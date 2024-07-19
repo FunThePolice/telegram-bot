@@ -1,18 +1,23 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Requests;
 
+use App\Concerns\GetsReplyMarkup;
 use App\Data\Contracts\ITelegramRequest;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
-class MessageTextData extends Data implements ITelegramRequest
+class QuestionTextData extends Data implements ITelegramRequest
 {
+    use GetsReplyMarkup;
+
+    public Collection $answers;
+
+    public string $text;
 
     public string $method = 'GET';
 
     public string $uri = 'sendMessage';
-
-    public string $text;
 
     public function getQuery(): array
     {
@@ -20,6 +25,7 @@ class MessageTextData extends Data implements ITelegramRequest
             'query' => [
                 'chat_id' => config('telegramBot.channel_id'),
                 'text' => $this->text,
+                'reply_markup' => $this->getReplyMarkUp($this->answers)
             ]
         ];
     }

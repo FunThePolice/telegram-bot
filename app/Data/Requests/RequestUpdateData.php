@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Requests;
 
 use App\Data\Contracts\ITelegramRequest;
 use Spatie\LaravelData\Data;
@@ -8,15 +8,15 @@ use Spatie\LaravelData\Data;
 class RequestUpdateData extends Data implements ITelegramRequest
 {
 
-    public string $allowedUpdate;
+    public array $allowedUpdates;
 
     public string $method = 'GET';
 
     public string $uri = 'getUpdates';
 
-    public function __construct(string $updateType = '')
+    public function __construct(array $updateType = [])
     {
-        $this->allowedUpdate = $updateType;
+        $this->allowedUpdates = $updateType;
     }
 
     public function getQuery(): array
@@ -24,7 +24,7 @@ class RequestUpdateData extends Data implements ITelegramRequest
         return [
             'query' => [
                 'offset' => (int) file_get_contents(config('telegramBot.cursorPath')),
-                'allowed_updates' => json_encode($this->allowedUpdate),
+                'allowed_updates' => json_encode($this->allowedUpdates),
             ]
         ];
     }

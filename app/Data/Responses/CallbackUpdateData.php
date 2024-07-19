@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Responses;
 
+use App\Data\Contracts\ITelegramResponse;
 use Spatie\LaravelData\Data;
 
-class CallbackUpdateData extends Data
+class CallbackUpdateData extends Data implements ITelegramResponse
 {
 
     public int $updateId;

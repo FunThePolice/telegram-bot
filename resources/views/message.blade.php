@@ -18,7 +18,7 @@
         <div class="input-group-text mb-3">
             <div class="mt-5 mx-auto">
                 <label class="form-label" for="text">Message:</label>
-                <textarea class="form-control" name="text" id="text" type="text"></textarea>
+                <textarea class="form-control" name="text" id="text" type="text-area"></textarea>
             </div>
         </div>
         <div class="input-group">

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Requests;
 
-use App\Data\Concerns\GetsReplyMarkup;
+use App\Concerns\GetsReplyMarkup;
 use App\Data\Contracts\ITelegramRequest;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
