@@ -3,7 +3,7 @@
 namespace App\Data\Requests;
 
 use App\Concerns\GetsReplyMarkup;
-use App\Data\Contracts\ITelegramRequest;
+use App\Contracts\ITelegramRequest;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 

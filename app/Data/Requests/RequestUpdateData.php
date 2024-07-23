@@ -2,7 +2,7 @@
 
 namespace App\Data\Requests;
 
-use App\Data\Contracts\ITelegramRequest;
+use App\Contracts\ITelegramRequest;
 use Spatie\LaravelData\Data;
 
 class RequestUpdateData extends Data implements ITelegramRequest
@@ -24,7 +24,7 @@ class RequestUpdateData extends Data implements ITelegramRequest
         return [
             'query' => [
                 'offset' => (int) file_get_contents(config('telegramBot.cursorPath')),
-                'allowed_updates' => json_encode($this->allowedUpdates),
+                'allowed_updates' => $this->getQueryAllowedUpdates(),
             ]
         ];
     }
@@ -37,5 +37,10 @@ class RequestUpdateData extends Data implements ITelegramRequest
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    protected function getQueryAllowedUpdates(): string
+    {
+        return json_encode($this->allowedUpdates);
     }
 }

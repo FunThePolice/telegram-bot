@@ -24,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('sessions', function (Blueprint $table) {
             $table->json('questions_to_go')->change();
-            $table->string('current_question')->nullable()->change();
+            $table->string('current_question')->change();
         });
     }
 };

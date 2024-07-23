@@ -2,7 +2,7 @@
 
 namespace App\Data\Requests;
 
-use App\Data\Contracts\ITelegramRequest;
+use App\Contracts\ITelegramRequest;
 use Spatie\LaravelData\Data;
 
 class RequestEditData extends Data implements ITelegramRequest

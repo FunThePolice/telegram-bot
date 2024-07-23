@@ -5,16 +5,18 @@ namespace App\Data\Responses;
 use App\Contracts\ITelegramResponse;
 use Spatie\LaravelData\Data;
 
-class MessageUpdateData extends Data implements ITelegramResponse
+class CommandUpdateData extends Data implements ITelegramResponse
 {
 
     public string $chatId;
 
     public string $text;
 
+    public string $type;
+
     public int $messageId;
 
-    public ?int $updateId = null;
+    public int $updateId;
 
     public string $senderName;
 
@@ -41,6 +43,11 @@ class MessageUpdateData extends Data implements ITelegramResponse
         return $this->messageId;
     }
 
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     public function getText(): string
     {
         return $this->text;
@@ -50,5 +57,4 @@ class MessageUpdateData extends Data implements ITelegramResponse
     {
         return $this->chatId;
     }
-
 }

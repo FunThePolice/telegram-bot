@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Concerns\FiltersAnswers;
+use App\Concerns\FiltersAnswers;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use App\Services\FileService;

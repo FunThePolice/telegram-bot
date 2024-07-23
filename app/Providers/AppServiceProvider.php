@@ -15,10 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(TelegramBotService::class, function (){
-        return new TelegramBotService(
-            new Client(['base_uri' => 'https://api.telegram.org/bot' . config('telegramBot.token') . '/'])
-        );
+        $this->app->bind(TelegramBotService::class, function () {
+            return new TelegramBotService(
+                new Client(['base_uri' => 'https://api.telegram.org/bot' . config('telegramBot.token') . '/'])
+            );
         });
     }
 

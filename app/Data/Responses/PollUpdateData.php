@@ -2,14 +2,14 @@
 
 namespace App\Data\Responses;
 
-use App\Data\Contracts\ITelegramResponse;
+use App\Contracts\ITelegramResponse;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
 class PollUpdateData extends Data implements ITelegramResponse
 {
 
-    public int $updateId;
+    public ?int $updateId;
 
     public int $pollId;
 

@@ -2,15 +2,18 @@
 
 namespace App\Concerns;
 
+use Illuminate\Support\Collection;
+
 trait GetsCorrectAnswerId
 {
 
-    public function getCorrectAnswerId(array $options)
+    public function getCorrectAnswerId(Collection $options)
     {
-        return collect($options)->values()
-            ->filter(function ($value) {
-                return count($value) > 1;
-            })
-            ->keys()->first();
+        return $options->map(function ($option) {
+            return $option->IsCorrect();
+        })
+            ->values()->search(function ($value) {
+            return $value === true;
+        });
     }
 }

@@ -11,13 +11,6 @@ class Session extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = ['questions_to_go' => 'array'];
-
-
-    public function getQuestions()
-    {
-        //это пиздец
-        return json_decode($this->questions_to_go);
-    }
+    protected $casts = ['questions_to_go' => 'string'];
 
 }

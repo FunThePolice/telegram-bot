@@ -2,7 +2,7 @@
 
 namespace App\Data\Responses;
 
-use App\Data\Contracts\ITelegramResponse;
+use App\Contracts\ITelegramResponse;
 use Spatie\LaravelData\Data;
 
 class PollAnswerData extends Data implements ITelegramResponse

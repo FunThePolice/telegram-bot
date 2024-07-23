@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data\Contracts;
+namespace App\Contracts;
 
 interface ITelegramResponse
 {

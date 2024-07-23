@@ -3,7 +3,9 @@
 namespace App\Data\Requests;
 
 use App\Concerns\GetsCorrectAnswerId;
-use App\Data\Contracts\ITelegramRequest;
+use App\Contracts\ITelegramRequest;
+use App\Data\OptionData;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
 class PollData extends Data implements ITelegramRequest
@@ -24,7 +26,8 @@ class PollData extends Data implements ITelegramRequest
 
     public string $chatId;
 
-    public array $options;
+    /** @var Collection<OptionData> */
+    public Collection $options;
 
     public string $type = 'quiz';
 
@@ -60,11 +63,12 @@ class PollData extends Data implements ITelegramRequest
 
     public function getOptions(): string
     {
-        $result = [];
-        foreach ($this->options as $option) {
-            $result[] = $option['text'];
-        }
-
-        return collect($result)->flatten()->toJson();
+        $options = $this->options->map(function ($option) {
+            $queryOptions[] = $option->getText();
+            return $queryOptions;
+        });
+//        dd($options->flatten()->toArray());
+//dd(implode(',', $options->flatten()->toArray()));
+        return json_encode($options->flatten()->toArray());
     }
 }
