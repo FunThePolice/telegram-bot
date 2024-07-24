@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BotMessageRequest extends FormRequest
+class QuestionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,10 @@ class BotMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'text' => 'string',
-
+            'text' => 'required|string',
+            'answers.*.text' => 'string|nullable',
+            'answers.*.true' => 'boolean',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ];
     }
 }

@@ -13,49 +13,97 @@
     <div class="my-5">
     </div>
     <div class="input-group justify-content-center">
-    <form action="{{ route('question') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ route('store') }}" method="post" enctype="multipart/form-data">
         @csrf
-        @method('Post')
         <div class="input-group-text mb-3">
             <div class="mt-5 mx-auto">
                 <label class="form-label" for="text">Message:</label>
-                <textarea class="form-control" name="text" id="text" type="text"></textarea>
+                <textarea class="form-control" name="text" id="text" type="text-area"></textarea>
             </div>
         </div>
+        <div class="input-group">
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer1[true]" value="{{true}}" aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answers[1][true]" value="{{true}}" aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer1[text]" aria-label="Text input with checkbox">
+        <input id="answer_1" type="text" class="form-control" name="answers[1][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer2[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answers[2][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer2[text]" aria-label="Text input with checkbox">
+        <input id="answer_2" type="text" class="form-control" name="answers[2][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer3[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answers[3][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer3[text]" aria-label="Text input with checkbox">
+        <input id="answer_3" type="text" class="form-control" name="answers[3][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answer4[true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="answers[4][true]" value='{{true}}' aria-label="Checkbox for following text input">
         </div>
-        <input type="text" class="form-control" name="answer4[text]" aria-label="Text input with checkbox">
-
+        <input id="answer_4" type="text" class="form-control" name="answers[4][text]" aria-label="Text input with checkbox">
+        </div>
         <div class="col mb-5 mx-auto">
-            <label for="images" class="form-label"></label>
+            <label for="image" class="form-label"></label>
             <input class="form-control" name="image" type="file" id="image"/>
         </div>
         <div>
             <button type="submit" class="btn btn-primary mb-3">Confirm</button>
         </div>
     </form>
-        <form action="{{route('hook')}}" method="GET">
-            @method('GET')
-            <div>
-                <button type="submit" class="btn btn-primary mb-3">Hook</button>
-            </div>
-        </form>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Images</th>
+                <th scope="col">Text</th>
+                <th scope="col">Answers</th>
+                <th scope="col">Correct</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($questions as $question)
+                <tr>
+                    <th scope="row" class="col-2">
+                        <div id="{{ $question->id }}" class="carousel carousel-dark slide">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url('storage/images/'.$question->images()->first()?->name) }}" alt="Image" class="img-fluid">
+                                </div>
+                                @foreach($question->images as $image)
+                                    <div class="carousel-item">
+                                        <img src="{{ url('storage/images/'.$image?->name)}}" class="img-thumbnail" width="300" height="250" alt="image">
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#{{ $question->id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#{{ $question->id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </th>
+                    <th scope="row">{{$question->body}}</th>
+                    <th scope="row">{{$question->answers}}</th>
+                    <th scope="row">{{$question->correct_answer}}</th>
+                    <th scope="row">
+                        <form id="question-edit" method="get" action="{{ route('update', ['question' => $question]) }}">
+                            @method('GET')
+                            @csrf
+                            <button class="btn btn-primary">Edit</button>
+                        </form>
+                        <form id="question-delete" method="post" action="{{ route('delete', ['question' => $question]) }}">
+                            @method('DELETE')
+                            @csrf
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </th>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
 </div>
 </div>
 

@@ -2,15 +2,20 @@
 
 namespace App\Services;
 
+use App\Concerns\IncrementsCursor;
+use App\Contracts\ITelegramRequest;
+use App\Contracts\ITelegramResponse;
+use App\Exceptions\InvalidResponseTypeException;
+use App\Exceptions\UpdateIsEmptyException;
+use App\Factories\ResponseFactory\ResponseFactory;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class TelegramBotService
 {
-
-    const TELEGRAM_CHANNEL_ID = '-4194487285';
-
-    const CURRENT_SERVER = 'https://telegram-bot.local/index.php';
-
+    use IncrementsCursor;
     protected Client $client;
 
     public function __construct(Client $client)
@@ -18,41 +23,105 @@ class TelegramBotService
         $this->client = $client;
     }
 
-    public function sendMessage(array $params = [])
+    /**
+     * @throws UpdateIsEmptyException
+     * @throws InvalidResponseTypeException
+     */
+    public function sendRequest(ITelegramRequest $requestData): ?ITelegramResponse
     {
-        $params = ['chat_id' => self::TELEGRAM_CHANNEL_ID] + $params ;
-        $response = $this->client->request('GET' , 'sendMessage', [
-            'query' => $params
-        ]);
-
-        if ($response->getStatusCode() == 200) {
-            return json_decode($response->getBody(), true);
+        try {
+            $response = $this->client->request(
+                $requestData->getMethod(),
+                $requestData->getUri(),
+                $requestData->getQuery()
+            );
+        } catch (GuzzleException $e) {
+            Log::info('Мы упали: ' . $e->getMessage() . 'код:' . $e->getCode() . $e->getTraceAsString());
+            return null;
         }
 
+        if ($response->getStatusCode() == 200) {
+            $responseData = collect(json_decode($response->getBody(), true));
+
+            if (!is_null($responseData['result']) && !empty($responseData['result'])) {
+                $result = $this->isUpdate($responseData['result']) ?
+                    collect($responseData['result'])->first() :
+                    $responseData['result'];
+
+                $this->incrementCursor($result);
+                return $this->handleResponse(collect($result));
+                }
+            }
+
+        throw new UpdateIsEmptyException();
     }
 
-    public function sendMessageWithPhoto(array $params = [])
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function getUpdates(ITelegramRequest $requestData): ITelegramResponse
     {
-        $params[] = array('name' => 'chat_id', 'contents' => self::TELEGRAM_CHANNEL_ID,);
+        return $this->sendRequest($requestData);
+    }
 
-        $response = $this->client->request('POST' , 'sendPhoto', [
-            'multipart' => $params
-        ]);
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function sendMessage(ITelegramRequest $requestData): ?ITelegramResponse
+    {
+        return $this->sendRequest($requestData);
+    }
 
-        if ($response->getStatusCode() == 200) {
-            return json_decode($response->getBody(), true);
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function sendPhoto(ITelegramRequest $requestData): ?ITelegramResponse
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function answerCallbackQuery(ITelegramRequest $requestData): ?ITelegramResponse
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function editMessageText(ITelegramRequest $requestData): ?ITelegramResponse
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    /**
+     * @throws UpdateIsEmptyException|InvalidResponseTypeException
+     */
+    public function sendPoll(ITelegramRequest $requestData): ?ITelegramResponse
+    {
+        return $this->sendRequest($requestData);
+    }
+
+    /**
+     * @throws InvalidResponseTypeException
+     */
+    protected function handleResponse(Collection $result): ?ITelegramResponse
+    {
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse($result);
+
+        if (is_null($response)) {
+            throw new InvalidResponseTypeException();
         }
 
+        return $response->create();
     }
 
-    public function setHook()
+    protected function isUpdate(array $result): bool
     {
-        $response = $this->client->request('GET' , 'setWebhook', [
-            'query' => [
-                'url' => self::CURRENT_SERVER,
-            ]
-        ]);
-        dd($response->getBody()->getContents());
+        return is_array(collect($result)->first());
     }
 
 }
