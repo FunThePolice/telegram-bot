@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Concerns\GetsCorrectAnswerId;
+use App\Factories\QuizHandlerFactory\QuizHandlerFactory;
 use App\Models\Session;
-use App\Services\QuizService;
 use App\Services\TelegramBotService;
 use Illuminate\Console\Command;
 
@@ -28,7 +27,7 @@ class PollTimer extends Command
     /**
      * Execute the console command.
      */
-    public function handle(TelegramBotService $botService, QuizService $quizService)
+    public function handle(TelegramBotService $botService): void
     {
         $sessions = Session::all();
 
@@ -37,7 +36,7 @@ class PollTimer extends Command
         }
 
         foreach ($sessions as $session) {
-            $quizService->processQuiz($session, $botService);
+            (new QuizHandlerFactory())->createHandler($session)->handle($botService);
         }
     }
 

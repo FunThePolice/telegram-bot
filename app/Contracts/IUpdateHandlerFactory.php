@@ -4,7 +4,7 @@ namespace App\Contracts;
 
 use Illuminate\Support\Collection;
 
-interface IHandlerFactory
+interface IUpdateHandlerFactory
 {
 
     public function createHandler(ITelegramResponse $update);

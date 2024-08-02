@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Concerns\FiltersAnswers;
+use App\Concerns\GetsCorrectAnswerId;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use App\Services\FileService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
-use FiltersAnswers;
+    use FiltersAnswers;
+    use GetsCorrectAnswerId;
 
     public function index(): View
     {
@@ -24,7 +27,7 @@ use FiltersAnswers;
         $question = Question::create([
             'body' => $request->text,
             'answers' => $this->filterAnswers($request->answers),
-            'correct_answer' => $this->getCorrectAnswer($request->answers)
+            'correct_answer' => $this->getCorrectAnswerId(Collection::make($request->answers))
         ]);
 
         if ($request->hasFile('image')) {
