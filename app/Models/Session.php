@@ -11,6 +11,6 @@ class Session extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = ['questions_to_go' => 'string'];
+    protected $casts = ['questions_to_go' => 'array'];
 
 }

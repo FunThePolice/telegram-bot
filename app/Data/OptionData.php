@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 class OptionData extends Data
 {
 
-    public string $text;
+    public string|null $text;
 
     public bool $true = false;
 

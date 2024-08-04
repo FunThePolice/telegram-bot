@@ -16,5 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [QuestionController::class, 'index'])->name('index');
 Route::post('/question', [QuestionController::class, 'create'])->name('store');
-Route::put('/question/{question}', [QuestionController::class, 'update'])->name('update');
+Route::post('/question/{question}', [QuestionController::class, 'update'])->name('update');
+Route::get('/question/edit/{question}', [QuestionController::class, 'edit'])->name('edit');
 Route::delete('/question/{question}', [QuestionController::class, 'delete'])->name('delete');

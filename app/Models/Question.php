@@ -23,4 +23,12 @@ class Question extends Model
     {
         return $this->hasMany(Image::class);
     }
+
+    public function filterAnswers(): array
+    {
+        return collect($this->answers)
+            ->filter(function ($answer) {
+                return $answer['text'] !== null;
+            })->toArray();
+    }
 }

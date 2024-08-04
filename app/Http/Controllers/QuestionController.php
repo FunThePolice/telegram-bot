@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Concerns\FiltersAnswers;
-use App\Concerns\GetsCorrectAnswerId;
+use App\Data\QuestionData;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use App\Services\FileService;
+use App\Services\QuestionService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
     use FiltersAnswers;
-    use GetsCorrectAnswerId;
 
     public function index(): View
     {
@@ -22,13 +21,9 @@ class QuestionController extends Controller
         return view('message', compact('questions'));
     }
 
-    public function create(QuestionRequest $request): RedirectResponse
+    public function create(QuestionRequest $request, QuestionService $questionServices): RedirectResponse
     {
-        $question = Question::create([
-            'body' => $request->text,
-            'answers' => $this->filterAnswers($request->answers),
-            'correct_answer' => $this->getCorrectAnswerId(Collection::make($request->answers))
-        ]);
+        $question = $questionServices->createQuestion(QuestionData::from($request->validated()));
 
         if ($request->hasFile('image')) {
             FileService::storeRelatedImage($request->file('image'), $question);
@@ -37,9 +32,15 @@ class QuestionController extends Controller
         return redirect()->route('index');
     }
 
-    public function update(QuestionRequest $request, Question $question): RedirectResponse
+    public function edit(Question $question): View
     {
-        $question->update($request->except('image'));
+        $answers = json_decode($question->answers, true);
+        return view('edit-question', compact('question', 'answers'));
+    }
+
+    public function update(QuestionRequest $request, Question $question, QuestionService $questionService): RedirectResponse
+    {
+        $questionService->updateQuestion($question, QuestionData::from($request->validated()));
 
         if ($request->hasFile('image')) {
             FileService::updateRelatedImage($request->file('image'), $question);
@@ -51,7 +52,6 @@ class QuestionController extends Controller
     public function delete(Question $question): RedirectResponse
     {
         $question->delete();
-        $question->answers()->delete();
         FileService::deleteRelatedImages($question);
 
         return redirect()->route('index');

@@ -22,7 +22,8 @@ class PollTimer extends Command
      *
      * @var string
      */
-    protected $description = 'Manages poll timer, defines app behavior based on state of related entities(sessions)';
+    protected $description = 'Manages poll timer and Quiz Session in DB, processes quiz in different channels based on
+    session state of each channel';
 
     /**
      * Execute the console command.

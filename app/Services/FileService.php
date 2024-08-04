@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -12,13 +13,11 @@ class FileService
     /**
      * @throws ValidationException
      */
-    public static function storeRelatedImage(array $uploadedFiles, Model $model): void
+    public static function storeRelatedImage(UploadedFile $uploadedFile, Model $model): void
     {
-        foreach ($uploadedFiles as $file) {
-            $fileName = $file->hashName();
-            Storage::disk('public')->put('images', $file );
-            $model->images()->create(['name' => $fileName]);
-        }
+        $fileName = $uploadedFile->hashName();
+        Storage::disk('public')->put('images', $uploadedFile);
+        $model->images()->create(['name' => $fileName]);
     }
 
     public static function deleteRelatedImages(Model $model): void
