@@ -2,7 +2,6 @@
 
 namespace App\Data\Requests;
 
-use App\Concerns\GetsCorrectAnswerId;
 use App\Contracts\ITelegramRequest;
 use App\Data\OptionData;
 use Illuminate\Support\Collection;
@@ -10,7 +9,6 @@ use Spatie\LaravelData\Data;
 
 class PollData extends Data implements ITelegramRequest
 {
-    use GetsCorrectAnswerId;
 
     public string $method = 'GET';
 
@@ -25,6 +23,8 @@ class PollData extends Data implements ITelegramRequest
     public int $openPeriod = 10;
 
     public string $chatId;
+
+    public int $correctOptionId;
 
     /** @var Collection<OptionData> */
     public Collection $options;
@@ -42,7 +42,7 @@ class PollData extends Data implements ITelegramRequest
                 'question' => $this->text,
                 'options' => $this->getOptions(),
                 'type' => $this->type,
-                'correct_option_id' => $this->getCorrectAnswerId($this->options),
+                'correct_option_id' => $this->correctOptionId,
                 'is_anonymous' => $this->isAnonymous,
                 'open_period' => $this->openPeriod,
                 'is_closed' => $this->isClosed,
@@ -67,8 +67,7 @@ class PollData extends Data implements ITelegramRequest
             $queryOptions[] = $option->getText();
             return $queryOptions;
         });
-//        dd($options->flatten()->toArray());
-//dd(implode(',', $options->flatten()->toArray()));
+
         return json_encode($options->flatten()->toArray());
     }
 }

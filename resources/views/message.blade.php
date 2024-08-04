@@ -85,11 +85,11 @@
                             </button>
                         </div>
                     </th>
-                    <th scope="row">{{$question->body}}</th>
-                    <th scope="row">{{$question->answers}}</th>
-                    <th scope="row">{{$question->correct_answer}}</th>
+                    <th scope="row">{{ $question->body }}</th>
+                    <th scope="row">{{ json_encode($question->answers) }}</th>
+                    <th scope="row">{{ $question->correct_answer }}</th>
                     <th scope="row">
-                        <form id="question-edit" method="get" action="{{ route('update', ['question' => $question]) }}">
+                        <form id="question-edit" method="get" action="{{ route('edit', ['question' => $question]) }}">
                             @method('GET')
                             @csrf
                             <button class="btn btn-primary">Edit</button>
