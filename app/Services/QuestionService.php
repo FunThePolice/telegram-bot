@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Data\QuestionData;
 use App\Exceptions\CorrectAnswerIsNotSet;
 use App\Models\Question;
+use App\Models\Session as SessionModel;
 
 class QuestionService
 {
@@ -27,6 +28,12 @@ class QuestionService
     public function updateQuestion(Question $question, QuestionData $questionData): bool
     {
         return $question->update($questionData->toArray());
+    }
+
+    public function getRandomQuestion(SessionModel $sessionModel): ?SessionModel
+    {
+        $sessionQuestions = $sessionModel->getQuestionsToGo();
+        return $sessionQuestions->shuffle()->first();
     }
 
 }

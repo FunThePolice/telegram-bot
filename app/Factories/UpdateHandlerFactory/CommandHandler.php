@@ -10,6 +10,7 @@ use App\Exceptions\UpdateIsEmptyException;
 use App\Models\Question;
 use App\Models\Score;
 use App\Models\Session;
+use App\Services\ScoreService;
 use App\Services\TelegramBotService;
 
 class CommandHandler implements IUpdateHandler
@@ -46,35 +47,15 @@ class CommandHandler implements IUpdateHandler
 
     protected function handleTopCommand(TelegramBotService $botService): void
     {
-        $scores = Score::orderBy('score', 'desc')->take(3)->get();
-
-        if ($scores->isEmpty()) {
-
-            try {
-                $botService->sendMessage(MessageTextData::from([
-                    'chatId' => $this->commandData->getChatId(),
-                    'text' => 'No scores available.',
-                ]));
-            } catch (InvalidResponseTypeException|UpdateIsEmptyException $e) {
-                return;
-            }
-
-            return;
-        }
-
-        $texts = $scores->map(function ($score) {
-            return sprintf('%s: %s/%s', $score->user_name, $score->score, $score->max_score);
-        })->toArray();
+        /** @var ScoreService $scoreService */
+        $scoreService = app(ScoreService::class);
+        $message = $scoreService->getChatTopScoresRequest($this->commandData->getChatId());
 
         try {
-            $botService->sendMessage(MessageTextData::from([
-                'chatId' => $this->commandData->getChatId(),
-                'text' => implode("\n", $texts),
-            ]));
+            $botService->sendMessage($message);
         } catch (UpdateIsEmptyException|InvalidResponseTypeException $e) {
             return;
         }
-
     }
 
 }

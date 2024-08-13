@@ -10,6 +10,7 @@ use App\Data\Requests\QuizData;
 use App\Data\Responses\PollUpdateData;
 use App\Exceptions\InvalidResponseTypeException;
 use App\Exceptions\UpdateIsEmptyException;
+use App\Models\Question;
 use App\Models\Session as SessionModel;
 use App\Services\TelegramBotService;
 use Illuminate\Support\Collection;
@@ -30,45 +31,44 @@ class SendNextPollHandler implements IQuizHandler
      */
     public function handle(TelegramBotService $botService): void
     {
-        $sessionQuestions = collect($this->session->getQuestionsToGo());
-        $question = $sessionQuestions->shuffle()->first();
+//        $sessionQuestions = $this->session->getQuestionsToGo();
+//        $question = $sessionQuestions->shuffle()->first();
 
-        $questionData = QuestionData::from([
-            'text' => $question['body'] ?? '',
-            'answers' => $question['answers'] ?? [],
-            'correctAnswerIds' => $question['correct_answer'] ?? [],
-        ]);
+//        $questionData = QuestionData::from([
+//            'text' => $question['body'] ?? '',
+//            'answers' => $question['answers'] ?? [],
+//            'correctAnswerIds' => $question['correct_answer'] ?? [],
+//        ]);
+        //$questionData = QuestionData::from($question->toArray());
 
         $updatedQuestionsToGo = $sessionQuestions->forget($sessionQuestions->search($question));
+        $poll->forgetQuestion($question);
 
         /*** @var PollUpdateData $poll */
-        $poll = $botService->sendPoll($this->getPollData($questionData));
+        $poll = $botService->sendPoll($this->getPollData($question));
 
         $this->session->update([
-            'questions_to_go' => $updatedQuestionsToGo,
-            'current_question' => [
-                'question' => $questionData->getText(),
-                'correctId' => $questionData->getCorrectAnswerIds(),
-            ],
-            'poll_id' => $poll->getPollId()
+            'questions_to_go' => $poll->getQuestionsToGo()->pluck('id'),
+            'current_question' => $question->id,
+            'poll_id' => $poll->getQuestion()->poll_id
         ]);
     }
 
-    protected function getPollData(QuestionData $questionData): QuizData|PollData
+    protected function getPollData(Question $question): QuizData|PollData
     {
-         return Collection::make($questionData->getCorrectAnswerIds())->count() > 1 ?
+         return Collection::make($question->getCorrectAnswerIds())->count() > 1 ?
              PollData::from([
                  'chatId' => $this->session->getChatId(),
-                 'text' => $questionData->getText(),
-                 'options' => $questionData->getOptions(),
-                 'correctOptionIds' => $questionData->getcorrectAnswerIds(),
+                 'text' => $question->body,
+                 'options' => $question->getOptions(),
+                 'correctOptionIds' => $question->getcorrectAnswerIds(),
                  'openPeriod' => (int) config('telegramBot.time_to_answer'),
              ]) :
              QuizData::from([
                  'chatId' => $this->session->getChatId(),
-                 'text' => $questionData->getText(),
-                 'options' => $questionData->getOptions(),
-                 'correctOptionIds' => $questionData->getcorrectAnswerIds(),
+                 'text' => $question->getText(),
+                 'options' => $question->getOptions(),
+                 'correctOptionIds' => $question->getcorrectAnswerIds(),
                  'openPeriod' => (int) config('telegramBot.time_to_answer'),
              ]);
     }
