@@ -17,7 +17,7 @@ class PollUpdateData extends Data implements ITelegramResponse
 
     public Collection $options;
 
-    public int $correctOptionId;
+    public Collection $correctOptionIds;
 
     public function getUpdateId(): int
     {
@@ -34,13 +34,14 @@ class PollUpdateData extends Data implements ITelegramResponse
         return $this->question;
     }
 
-    public function getOptions()
+    public function getOptions(): Collection
     {
         return $this->options;
     }
 
-    public function getCorrectOptionId(): int
+    public function getCorrectOptionIds(): ?Collection
     {
-        return $this->correctOptionId;
+        return $this->correctOptionIds ?? null;
     }
+
 }

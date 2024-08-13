@@ -23,26 +23,47 @@
             </div>
             <div class="input-group">
                 <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" name="answers[1][true]" value="{{true}}" aria-label="Checkbox for following text input">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value="0" aria-label="Checkbox for following text input" @checked(in_array('0', $correctAnswers))>
                 </div>
-                <input id="answer_1" type="text" class="form-control" name="answers[1][text]" aria-label="Text input with checkbox" value="{{ $answers[1]['text'] ?? null }}">
+                <input id="answer_1" type="text" class="form-control" name="answers[0]" aria-label="Text input with checkbox" value="{{ $answers[0] ?? null}}">
 
                 <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" name="answers[2][true]" value='{{true}}' aria-label="Checkbox for following text input">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='1' aria-label="Checkbox for following text input" @checked(in_array('1', $correctAnswers))>
                 </div>
-                <input id="answer_2" type="text" class="form-control" name="answers[2][text]" aria-label="Text input with checkbox" value="{{ $answers[2]['text'] ?? null }}">
+                <input id="answer_2" type="text" class="form-control" name="answers[1]" aria-label="Text input with checkbox" value="{{ $answers[1] ?? null}}">
 
                 <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" name="answers[3][true]" value='{{true}}' aria-label="Checkbox for following text input">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='2' aria-label="Checkbox for following text input" @checked(in_array('2', $correctAnswers))>
                 </div>
-                <input id="answer_3" type="text" class="form-control" name="answers[3][text]" aria-label="Text input with checkbox" value="{{ $answers[3]['text'] ?? null }}">
+                <input id="answer_3" type="text" class="form-control" name="answers[2]" aria-label="Text input with checkbox" value="{{ $answers[2] ?? null}}">
 
                 <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" name="answers[4][true]" value='{{true}}' aria-label="Checkbox for following text input">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='3' aria-label="Checkbox for following text input" @checked(in_array('3', $correctAnswers))>
                 </div>
-                <input id="answer_4" type="text" class="form-control" name="answers[4][text]" aria-label="Text input with checkbox" value="{{ $answers[4]['text'] ?? null }}">
+                <input id="answer_4" type="text" class="form-control" name="answers[3]" aria-label="Text input with checkbox" value="{{ $answers[3] ?? null}}">
+
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='4' aria-label="Checkbox for following text input" @checked(in_array('4', $correctAnswers))>
+                </div>
+                <input id="answer_4" type="text" class="form-control" name="answers[4]" aria-label="Text input with checkbox" value="{{ $answers[4] ?? null}}">
+
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='5' aria-label="Checkbox for following text input" @checked(in_array('5', $correctAnswers))>
+                </div>
+                <input id="answer_4" type="text" class="form-control" name="answers[5]" aria-label="Text input with checkbox" value="{{ $answers[5] ?? null}}">
+
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='6' aria-label="Checkbox for following text input" @checked(in_array('6', $correctAnswers))>
+                </div>
+                <input id="answer_4" type="text" class="form-control" name="answers[6]" aria-label="Text input with checkbox" value="{{ $answers[6] ?? null}}">
+
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='7' aria-label="Checkbox for following text input" @checked(in_array('7', $correctAnswers))>
+                </div>
+                <input id="answer_4" type="text" class="form-control" name="answers[7]" aria-label="Text input with checkbox" value="{{ $answers[7] ?? null}}">
+
             </div>
-            <div class="col mb-5 mx-auto">
+                <div class="col mb-5 mx-auto">
                 <label for="image" class="form-label"></label>
                 <input class="form-control" name="image" type="file" id="image"/>
             </div>

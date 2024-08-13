@@ -22,7 +22,6 @@ class CommandUpdateData extends Data implements ITelegramResponse
 
     public int $senderId;
 
-
     public function getSenderId(): int
     {
         return $this->senderId;
@@ -57,4 +56,5 @@ class CommandUpdateData extends Data implements ITelegramResponse
     {
         return $this->chatId;
     }
+
 }

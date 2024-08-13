@@ -23,8 +23,8 @@ class QuestionRequest extends FormRequest
     {
         return [
             'text' => 'required|string',
-            'answers.*.text' => 'string|nullable',
-            'answers.*.true' => 'boolean',
+            'correctAnswerIds.*' => 'required|string',
+            'answers.*' => 'string|nullable',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ];
     }

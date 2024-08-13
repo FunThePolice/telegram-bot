@@ -10,10 +10,9 @@ class QuestionData extends Data
 
     public string $text;
 
-    /** @var Collection<OptionData> */
-    public Collection $answers;
+    public array $answers;
 
-    public string $correctAnswer;
+    public array $correctAnswerIds;
 
     public function getText(): string
     {
@@ -25,47 +24,27 @@ class QuestionData extends Data
         return $this->filterAnswers();
     }
 
-    public function getCorrectAnswer(): string
+    public function getOptions(): Collection
     {
-        $answer = [];
-        foreach ($this->getAnswers() as $item) {
-            if (isset($item['true'])) {
-                $answer[] = $item;
-            }
-
-        }
-        $correctAnswer = reset($answer);
-
-        return $correctAnswer['text'] ?? '';
+        return Collection::make($this->getAnswers());
     }
 
-    public function getCorrectAnswerId()
+    public function getCorrectAnswerIds(): Collection
     {
-        $options = Collection::make($this->answers);
-
-        return $options->map(function ($option) {
-            return $option->IsCorrect();
-        })
-            ->values()->search(function ($value) {
-                return $value === true;
-            });
+        return Collection::make($this->correctAnswerIds);
     }
 
     protected function filterAnswers(): array
     {
-        return $this->answers
-            ->filter(function ($answer) {
-                $answer = $answer->toArray();
-                return $answer['text'] !== null;
-            })->toArray();
+        return Collection::make($this->answers)->filter()->toArray();
     }
 
     public function toArray(): array
     {
         return [
-            'body' => $this->text,
+            'body' => $this->getText(),
             'answers' => $this->getAnswers(),
-            'correct_answer' => $this->getCorrectAnswerId()
+            'correct_answer' => $this->getCorrectAnswerIds()
         ];
     }
 

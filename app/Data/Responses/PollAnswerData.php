@@ -3,6 +3,7 @@
 namespace App\Data\Responses;
 
 use App\Contracts\ITelegramResponse;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
 class PollAnswerData extends Data implements ITelegramResponse
@@ -16,7 +17,7 @@ class PollAnswerData extends Data implements ITelegramResponse
 
     public int $userId;
 
-    public int $optionId;
+    public Collection $optionIds;
 
     public function getPollId(): int
     {
@@ -38,9 +39,9 @@ class PollAnswerData extends Data implements ITelegramResponse
         return $this->userId;
     }
 
-    public function getOptionId(): int
+    public function getOptionIds(): Collection
     {
-        return $this->optionId;
+        return $this->optionIds;
     }
 
 }

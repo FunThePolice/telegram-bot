@@ -14,12 +14,11 @@ class MessageUpdateData extends Data implements ITelegramResponse
 
     public int $messageId;
 
-    public ?int $updateId = null;
+    public int $updateId;
 
     public string $senderName;
 
     public int $senderId;
-
 
     public function getSenderId(): int
     {

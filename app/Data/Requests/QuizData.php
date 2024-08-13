@@ -6,7 +6,7 @@ use App\Contracts\ITelegramRequest;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\Data;
 
-class PollData extends Data implements ITelegramRequest
+class QuizData extends Data implements ITelegramRequest
 {
 
     public string $method = 'GET';
@@ -19,7 +19,7 @@ class PollData extends Data implements ITelegramRequest
 
     public bool $silentNotifications = true;
 
-    public bool $allowsMultipleAnswers = true;
+    public bool $allowsMultipleAnswers = false;
 
     public int $openPeriod = 10;
 
@@ -29,9 +29,10 @@ class PollData extends Data implements ITelegramRequest
 
     public Collection $options;
 
-    public string $type = 'regular';
+    public string $type = 'quiz';
 
     public string $uri = 'sendPoll';
+
 
     public function getQuery(): array
     {
@@ -41,7 +42,7 @@ class PollData extends Data implements ITelegramRequest
                 'question' => $this->text,
                 'options' => $this->getOptions(),
                 'type' => $this->type,
-                'correct_option_id' => $this->correctOptionIds,
+                'correct_option_id' => $this->getCorrectOptionId(),
                 'allows_multiple_answers' => $this->allowsMultipleAnswers,
                 'is_anonymous' => $this->isAnonymous,
                 'open_period' => $this->openPeriod,
@@ -69,6 +70,11 @@ class PollData extends Data implements ITelegramRequest
         });
 
         return json_encode($options->flatten()->toArray());
+    }
+
+    public function getCorrectOptionId(): int
+    {
+        return $this->correctOptionIds->first();
     }
 
 }

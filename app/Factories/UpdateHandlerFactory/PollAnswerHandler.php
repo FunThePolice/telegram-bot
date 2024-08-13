@@ -21,11 +21,10 @@ class PollAnswerHandler implements IUpdateHandler
     public function handle(TelegramBotService $botService): void
     {
         $session = Session::where('poll_id', $this->answerData->getPollId())->get()->first();
-        $currentQuestion = json_decode($session->current_question, true);
-        $isCorrect = $currentQuestion['correctId'] === $this->answerData->getOptionId();
-
+        $isCorrect = $session->getCurrentQuestion()['correctId'] == $this->answerData->getOptionIds()->toArray();
+        dump($isCorrect, $session->getCurrentQuestion()['correctId'], $this->answerData->getOptionIds()->toArray());
         Answer::create([
-            'chat_id' => $session->chat_id,
+            'chat_id' => $session->getChatId(),
             'user_name' => $this->answerData->getUserName(),
             'user_id' => $this->answerData->getUserId(),
             'is_correct' => $isCorrect,

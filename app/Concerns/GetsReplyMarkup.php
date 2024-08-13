@@ -30,6 +30,7 @@ trait GetsReplyMarkup
             }
 
         }
+
         return json_encode([
             'inline_keyboard' => collect([$firstLayer, $secondLayer])->filter()
         ]);

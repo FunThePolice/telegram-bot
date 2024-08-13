@@ -2,13 +2,14 @@
 
 namespace App\Factories\ResponseFactory;
 
-use App\Contracts\IBotResponse;
+use App\Concerns\getsLastUpdateId;
 use App\Contracts\IUpdateResponse;
 use App\Data\Responses\MessageUpdateData;
 use Illuminate\Support\Collection;
 
 class MessageUpdateResponse implements IUpdateResponse
 {
+    use getsLastUpdateId;
 
     protected Collection $result;
 
@@ -24,12 +25,12 @@ class MessageUpdateResponse implements IUpdateResponse
             $this->result;
 
         return MessageUpdateData::from([
-            'updateId' => $this->result['update_id'] ?? null,
-            'chatId' => $message['chat']['id'],
-            'text' => $message['text'],
-            'messageId' => $message['message_id'],
-            'senderName' => $message['from']['first_name'],
-            'senderId' => $message['from']['id'],
+            'updateId' => $this->result['update_id'] ?? $this->getLastUpdateId(),
+            'chatId' => $message['chat']['id'] ?? '',
+            'text' => $message['text'] ?? '',
+            'messageId' => $message['message_id'] ?? 0,
+            'senderName' => $message['from']['first_name'] ?? '',
+            'senderId' => $message['from']['id'] ?? 0,
         ]);
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Concerns\IncrementsCursor;
 use App\Contracts\ITelegramRequest;
 use App\Contracts\ITelegramResponse;
 use App\Exceptions\InvalidResponseTypeException;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramBotService
 {
-    use IncrementsCursor;
+
     protected Client $client;
 
     public function __construct(Client $client)
@@ -122,6 +121,13 @@ class TelegramBotService
     protected function isUpdate(array $result): bool
     {
         return is_array(collect($result)->first());
+    }
+
+    protected function incrementCursor(array $result): void
+    {
+        if (collect($result)->has('update_id')) {
+            file_put_contents(config('telegramBot.cursorPath'), $result['update_id'] + 1);
+        }
     }
 
 }

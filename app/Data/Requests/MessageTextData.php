@@ -20,8 +20,8 @@ class MessageTextData extends Data implements ITelegramRequest
     {
         return [
             'query' => [
-                'chat_id' => $this->chatId,
-                'text' => $this->text,
+                'chat_id' => $this->getChatId(),
+                'text' => $this->getText(),
             ]
         ];
     }
@@ -34,6 +34,16 @@ class MessageTextData extends Data implements ITelegramRequest
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    public function getText(): string
+    {
+        return $this->text ?? '';
+    }
+
+    public function getChatId(): string
+    {
+        return $this->chatId;
     }
 
 }

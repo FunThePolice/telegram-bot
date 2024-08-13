@@ -24,7 +24,7 @@ class QuestionTextData extends Data implements ITelegramRequest
         return [
             'query' => [
                 'chat_id' => config('telegramBot.channel_id'),
-                'text' => $this->text,
+                'text' => $this->getText(),
                 'reply_markup' => $this->getReplyMarkUp($this->answers)
             ]
         ];
@@ -38,6 +38,11 @@ class QuestionTextData extends Data implements ITelegramRequest
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    public function getText(): string
+    {
+        return $this->text ?? 'No text';
     }
 
 }

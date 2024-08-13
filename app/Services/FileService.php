@@ -31,7 +31,7 @@ class FileService
     /**
      * @throws ValidationException
      */
-    public static function updateRelatedImage(array $uploadedFiles, Model $model): void
+    public static function updateRelatedImage(UploadedFile $uploadedFiles, Model $model): void
     {
         static::deleteRelatedImages($model);
         static::storeRelatedImage($uploadedFiles, $model);

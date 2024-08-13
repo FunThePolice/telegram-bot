@@ -22,8 +22,8 @@ class CallbackAnswerData extends Data implements ITelegramRequest
     {
         return [
             'query' => [
-                'callback_query_id' => $this->callbackId,
-                'text' => $this->getCallbackText(),
+                    'callback_query_id' => $this->getCallbackId(),
+                    'text' => $this->getCallbackText(),
                 ]
             ];
     }
@@ -36,6 +36,11 @@ class CallbackAnswerData extends Data implements ITelegramRequest
     public function getUri(): string
     {
         return $this->uri;
+    }
+
+    public function getCallbackId(): int
+    {
+        return $this->callbackId;
     }
 
     public function getCallbackText(): string

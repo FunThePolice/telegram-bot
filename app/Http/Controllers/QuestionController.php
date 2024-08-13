@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Concerns\FiltersAnswers;
 use App\Data\QuestionData;
+use App\Exceptions\CorrectAnswerIsNotSet;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use App\Services\FileService;
 use App\Services\QuestionService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
-    use FiltersAnswers;
 
     public function index(): View
     {
@@ -21,6 +21,10 @@ class QuestionController extends Controller
         return view('message', compact('questions'));
     }
 
+    /**
+     * @throws CorrectAnswerIsNotSet
+     * @throws ValidationException
+     */
     public function create(QuestionRequest $request, QuestionService $questionServices): RedirectResponse
     {
         $question = $questionServices->createQuestion(QuestionData::from($request->validated()));
@@ -34,8 +38,9 @@ class QuestionController extends Controller
 
     public function edit(Question $question): View
     {
-        $answers = json_decode($question->answers, true);
-        return view('edit-question', compact('question', 'answers'));
+        $answers = $question->getAnswers();
+        $correctAnswers = $question->getCorrectAnswers();
+        return view('edit-question', compact('question', 'answers', 'correctAnswers'));
     }
 
     public function update(QuestionRequest $request, Question $question, QuestionService $questionService): RedirectResponse

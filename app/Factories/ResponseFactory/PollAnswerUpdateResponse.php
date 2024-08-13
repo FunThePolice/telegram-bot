@@ -2,12 +2,14 @@
 
 namespace App\Factories\ResponseFactory;
 
+use App\Concerns\getsLastUpdateId;
 use App\Contracts\IUpdateResponse;
 use App\Data\Responses\PollAnswerData;
 use Illuminate\Support\Collection;
 
 class PollAnswerUpdateResponse implements IUpdateResponse
 {
+    use getsLastUpdateId;
 
     protected Collection $result;
 
@@ -21,11 +23,11 @@ class PollAnswerUpdateResponse implements IUpdateResponse
         $pollAnswer = $this->result['poll_answer'];
 
         return PollAnswerData::from([
-            'pollId' => $pollAnswer['poll_id'],
-            'updateId' => $this->result['update_id'],
-            'userName' => $pollAnswer['user']['first_name'],
-            'userId' => $pollAnswer['user']['id'],
-            'optionId' => collect($pollAnswer['option_ids'])->first(),
+            'pollId' => $pollAnswer['poll_id'] ?? 0,
+            'updateId' => $this->result['update_id'] ?? $this->getLastUpdateId(),
+            'userName' => $pollAnswer['user']['first_name'] ?? '',
+            'userId' => $pollAnswer['user']['id'] ?? 0,
+            'optionIds' => collect($pollAnswer['option_ids']) ?? [],
         ]);
     }
 

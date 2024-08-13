@@ -4,6 +4,8 @@ namespace App\Factories\QuizHandlerFactory;
 
 use App\Contracts\IQuizHandler;
 use App\Data\Requests\MessageTextData;
+use App\Exceptions\InvalidResponseTypeException;
+use App\Exceptions\UpdateIsEmptyException;
 use App\Models\Answer;
 use App\Models\Score;
 use App\Models\Session as SessionModel;
@@ -19,13 +21,17 @@ class FinishQuizHandler implements IQuizHandler
         $this->session = $session;
     }
 
-    public function handle(TelegramBotService $botService)
+    /**
+     * @throws InvalidResponseTypeException
+     * @throws UpdateIsEmptyException
+     */
+    public function handle(TelegramBotService $botService): void
     {
-        $answers = Answer::where('chat_id', $this->session->chat_id)->get();
+        $answers = Answer::where('chat_id', $this->session->getChatId())->get();
 
-        if (is_null($answers)) {
+        if ($answers->isEmpty()) {
             $botService->sendMessage(MessageTextData::from([
-                'chatId' => $this->session->chat_id,
+                'chatId' => $this->session->getChatId(),
                 'text' => 'No answers in this quiz'
             ]));
             return;
@@ -34,6 +40,7 @@ class FinishQuizHandler implements IQuizHandler
         $results = $answers->groupBy('user_name')->map(function ($userAnswers, $userName) {
             $correctCount = $userAnswers->where('is_correct', true)->count();
             $totalCount = $userAnswers->count();
+
             return [
                 'resultText' => sprintf('%s:%s/%s',$userName, $correctCount, $totalCount),
                 'result' => [
@@ -50,11 +57,11 @@ class FinishQuizHandler implements IQuizHandler
         Score::upsert($result,['user_name']);
 
         $botService->sendMessage(MessageTextData::from([
-            'chatId' => $this->session->chat_id,
+            'chatId' => $this->session->getChatId(),
             'text' => implode("\n", $resultText),
         ]));
 
-        Answer::where('chat_id', $this->session->chat_id)->delete();
+        Answer::where('chat_id', $this->session->getChatId())->delete();
         $this->session->delete();
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\QuizHandlerFactoryConditionsAreNotMet;
+use App\Exceptions\QuizSessionDataIsCorrupted;
 use App\Factories\QuizHandlerFactory\QuizHandlerFactory;
 use App\Models\Session;
 use App\Services\TelegramBotService;
@@ -37,7 +39,13 @@ class PollTimer extends Command
         }
 
         foreach ($sessions as $session) {
-            (new QuizHandlerFactory())->createHandler($session)->handle($botService);
+
+            try {
+                (new QuizHandlerFactory())->createHandler($session)->handle($botService);
+            } catch (QuizSessionDataIsCorrupted|QuizHandlerFactoryConditionsAreNotMet $e) {
+                return;
+            }
+
         }
     }
 

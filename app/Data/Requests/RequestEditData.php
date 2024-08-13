@@ -21,8 +21,8 @@ class RequestEditData extends Data implements ITelegramRequest
         return [
             'query' => [
                 'chat_id' => config('telegramBot.channel_id'),
-                'message_id' => $this->messageId,
-                'text' => $this->messageText,
+                'message_id' => $this->getMessageId(),
+                'text' => $this->getMessageText(),
             ]
         ];
     }
@@ -39,6 +39,12 @@ class RequestEditData extends Data implements ITelegramRequest
 
     public function getMessageText(): string
     {
-        return $this->messageText;
+        return $this->messageText ?? 'No text';
     }
+
+    public function getMessageId(): int
+    {
+        return $this->messageId;
+    }
+
 }

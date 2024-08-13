@@ -2,14 +2,13 @@
 
 namespace App\Factories\ResponseFactory;
 
-use App\Concerns\IncrementsCursor;
 use App\Contracts\IUpdateResponse;
 use App\Contracts\IResponseFactory;
 use Illuminate\Support\Collection;
 
 class ResponseFactory implements IResponseFactory
 {
-    use IncrementsCursor;
+
     public function createResponse(Collection $result): ?IUpdateResponse
     {
         $response = null;

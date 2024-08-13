@@ -22,25 +22,47 @@
             </div>
         </div>
         <div class="input-group">
-        <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answers[1][true]" value="{{true}}" aria-label="Checkbox for following text input">
-        </div>
-        <input id="answer_1" type="text" class="form-control" name="answers[1][text]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answers[2][true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value="0" aria-label="Checkbox for following text input">
         </div>
-        <input id="answer_2" type="text" class="form-control" name="answers[2][text]" aria-label="Text input with checkbox">
+        <input id="answer_1" type="text" class="form-control" name="answers[0]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answers[3][true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='1' aria-label="Checkbox for following text input">
         </div>
-        <input id="answer_3" type="text" class="form-control" name="answers[3][text]" aria-label="Text input with checkbox">
+        <input id="answer_2" type="text" class="form-control" name="answers[1]" aria-label="Text input with checkbox">
 
         <div class="input-group-text">
-            <input class="form-check-input mt-0" type="checkbox" name="answers[4][true]" value='{{true}}' aria-label="Checkbox for following text input">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='2' aria-label="Checkbox for following text input">
         </div>
-        <input id="answer_4" type="text" class="form-control" name="answers[4][text]" aria-label="Text input with checkbox">
+        <input id="answer_3" type="text" class="form-control" name="answers[2]" aria-label="Text input with checkbox">
+
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='3' aria-label="Checkbox for following text input">
+        </div>
+        <input id="answer_4" type="text" class="form-control" name="answers[3]" aria-label="Text input with checkbox">
+
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='4' aria-label="Checkbox for following text input">
+        </div>
+        <input id="answer_4" type="text" class="form-control" name="answers[4]" aria-label="Text input with checkbox">
+
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='5' aria-label="Checkbox for following text input">
+        </div>
+        <input id="answer_4" type="text" class="form-control" name="answers[5]" aria-label="Text input with checkbox">
+
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='6' aria-label="Checkbox for following text input">
+        </div>
+        <input id="answer_4" type="text" class="form-control" name="answers[6]" aria-label="Text input with checkbox">
+
+        <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" name="correctAnswerIds[]" value='7' aria-label="Checkbox for following text input">
+        </div>
+        <input id="answer_4" type="text" class="form-control" name="answers[7]" aria-label="Text input with checkbox">
+
         </div>
         <div class="col mb-5 mx-auto">
             <label for="image" class="form-label"></label>
@@ -86,8 +108,8 @@
                         </div>
                     </th>
                     <th scope="row">{{ $question->body }}</th>
-                    <th scope="row">{{ json_encode($question->answers) }}</th>
-                    <th scope="row">{{ $question->correct_answer }}</th>
+                    <th scope="row">{{ $question->getAnswersView() }}</th>
+                    <th scope="row">{{ $question->getCorrectAnswerView() }}</th>
                     <th scope="row">
                         <form id="question-edit" method="get" action="{{ route('edit', ['question' => $question]) }}">
                             @method('GET')
