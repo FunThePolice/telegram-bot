@@ -38,8 +38,8 @@ class QuestionController extends Controller
 
     public function edit(Question $question): View
     {
-        $answers = $question->getAnswers();
-        $correctAnswers = $question->getCorrectAnswers();
+        $answers = $question->getAnswers()->toArray();
+        $correctAnswers = $question->getCorrectAnswers()->toArray();
         return view('edit-question', compact('question', 'answers', 'correctAnswers'));
     }
 

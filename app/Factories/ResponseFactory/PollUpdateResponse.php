@@ -2,14 +2,14 @@
 
 namespace App\Factories\ResponseFactory;
 
-use App\Concerns\getsLastUpdateId;
+use App\Concerns\GetsLastUpdateId;
 use App\Contracts\IUpdateResponse;
 use App\Data\Responses\PollUpdateData;
 use Illuminate\Support\Collection;
 
 class PollUpdateResponse implements IUpdateResponse
 {
-    use getsLastUpdateId;
+    use GetsLastUpdateId;
 
     protected Collection $result;
 

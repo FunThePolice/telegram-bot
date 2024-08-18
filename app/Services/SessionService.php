@@ -6,24 +6,24 @@ use App\Models\Question;
 use App\Models\Session;
 use Illuminate\Support\Collection;
 
-class Poll
+class SessionService
 {
+
     protected Session $session;
-    protected ?Question $currentQuestion;
-    protected ?Collection $questionsToGo;
+
+    protected ?Question $currentQuestion = null;
+
+    protected ?Collection $questionsToGo = null;
+
 
     public function __construct(Session $session)
     {
-       $this->session = $session;
+        $this->session = $session;
     }
 
-    public function getCurrentQuestion(): Question
+    public function getCurrentQuestion(): ?Question
     {
-        if (!$this->currentQuestion) {
-            $this->currentQuestion = Question::find($this->session->current_question);
-        }
-
-        return $this->currentQuestion;
+        return Question::find($this->session->current_question);
     }
 
     public function getQuestionsToGo(): Collection
@@ -37,7 +37,7 @@ class Poll
 
     public function forgetQuestion(Question $question): void
     {
-        $this->questionsToGo = $this->questionsToGo->filter(function (Question $questionToGo) use($question) {
+        $this->questionsToGo = $this->getQuestionsToGo()->filter(function (Question $questionToGo) use($question) {
             return $questionToGo->id !== $question->id;
         });
     }
@@ -49,8 +49,18 @@ class Poll
             ->isPast();
     }
 
+    public function updateSession(int $pollId, int $questionId): void
+    {
+        $this->session->update([
+            'questions_to_go' => $this->getQuestionsToGo()->pluck('id'),
+            'current_question' => $questionId,
+            'poll_id' => $pollId,
+        ]);
+    }
+
     public function getSession(): Session
     {
         return $this->session;
     }
+
 }

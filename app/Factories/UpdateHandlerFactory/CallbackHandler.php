@@ -60,11 +60,11 @@ class CallbackHandler implements IUpdateHandler
     {
         return $question->images->isEmpty() ?
             QuestionTextData::from([
-                'answers' => collect($question->getAnswers()),
+                'answers' => $question->getAnswers(),
                 'text' => $question->getBody(),
             ]) :
             QuestionPhotoData::from([
-                'answers' => collect($question->getAnswers()),
+                'answers' => $question->getAnswers(),
                 'text' => $question->getBody(),
                 'photo' => $question->images()->first()->name,
             ]);

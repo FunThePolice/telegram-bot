@@ -5,9 +5,8 @@ namespace App\Factories\QuizHandlerFactory;
 use App\Contracts\IQuizHandler;
 use App\Contracts\IQuizHandlerFactory;
 use App\Exceptions\QuizHandlerFactoryConditionsAreNotMet;
-use App\Exceptions\QuizSessionDataIsCorrupted;
-use App\Models\Session as SessionModel;
 use App\Services\Poll;
+use App\Services\SessionService;
 
 class QuizHandlerFactory implements IQuizHandlerFactory
 {
@@ -15,20 +14,20 @@ class QuizHandlerFactory implements IQuizHandlerFactory
     /**
      * @throws QuizHandlerFactoryConditionsAreNotMet
      */
-    public function createHandler(Poll $poll): ?IQuizHandler
+    public function createHandler(SessionService $sessionService): ?IQuizHandler
     {
 
-        if ($poll->getCurrentQuestion()) {
-            return new SendNextPollHandler($poll);
+        if (!$sessionService->getCurrentQuestion()) {
+            return new SendNextPollHandler($sessionService);
         }
 
-        if ($poll->isTimeToAnswerExpired($poll)) {
+        if ($sessionService->isTimeToAnswerExpired()) {
 
-            if ($poll->getQuestionsToGo()->isEmpty()) {
-                return new FinishQuizHandler($poll);
+            if ($sessionService->getQuestionsToGo()->isEmpty()) {
+                return new FinishQuizHandler($sessionService);
             }
 
-            return new SendNextPollHandler($poll);
+            return new SendNextPollHandler($sessionService);
         }
 
         throw new QuizHandlerFactoryConditionsAreNotMet();

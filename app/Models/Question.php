@@ -27,23 +27,17 @@ class Question extends Model
 
     public function getAnswersView(): string
     {
-        return implode(', ', $this->getAnswers());
+        return implode(', ', $this->getAnswers()->toArray());
     }
 
     public function getCorrectAnswerView(): string
     {
-        $answersView = Collection::make($this->correct_answer)->map(function ($answer) {
-            $answers = $this->getAnswers();
-            $textCorrectAnswers[] = $answers[$answer];
-            return $textCorrectAnswers;
-        });
-
-        return $answersView->flatten()->implode(', ');
+        return $this->getCorrectAnswers()->flatten()->implode(', ');
     }
 
-    public function getAnswers(): array
+    public function getAnswers(): Collection
     {
-        return $this->answers ?? [];
+        return Collection::make($this->answers ?? []);
     }
 
     public function getBody(): string
@@ -51,9 +45,9 @@ class Question extends Model
         return $this->body ?? '';
     }
 
-    public function getCorrectAnswers(): array
+    public function getCorrectAnswers(): Collection
     {
-        return $this->correct_answer ?? [];
+        return Collection::make($this->correct_answer ?? []);
     }
 
 }

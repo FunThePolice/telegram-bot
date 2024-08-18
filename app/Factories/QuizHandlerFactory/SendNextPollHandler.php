@@ -12,17 +12,21 @@ use App\Exceptions\InvalidResponseTypeException;
 use App\Exceptions\UpdateIsEmptyException;
 use App\Models\Question;
 use App\Models\Session as SessionModel;
+use App\Services\Poll;
+use App\Services\PollService;
+use App\Services\QuestionService;
+use App\Services\SessionService;
 use App\Services\TelegramBotService;
 use Illuminate\Support\Collection;
 
 class SendNextPollHandler implements IQuizHandler
 {
 
-    protected SessionModel $session;
+    protected SessionService $sessionService;
 
-    public function __construct(SessionModel $session)
+    public function __construct(SessionService $sessionService)
     {
-        $this->session = $session;
+        $this->sessionService = $sessionService;
     }
 
     /**
@@ -31,45 +35,18 @@ class SendNextPollHandler implements IQuizHandler
      */
     public function handle(TelegramBotService $botService): void
     {
-//        $sessionQuestions = $this->session->getQuestionsToGo();
-//        $question = $sessionQuestions->shuffle()->first();
-
-//        $questionData = QuestionData::from([
-//            'text' => $question['body'] ?? '',
-//            'answers' => $question['answers'] ?? [],
-//            'correctAnswerIds' => $question['correct_answer'] ?? [],
-//        ]);
-        //$questionData = QuestionData::from($question->toArray());
-
-        $updatedQuestionsToGo = $sessionQuestions->forget($sessionQuestions->search($question));
-        $poll->forgetQuestion($question);
+        /** @var QuestionService $questionService */
+        $questionService = app(QuestionService::class);
+        $questionToGo = $questionService->getRandomQuestion($this->sessionService->getSession());
+        $this->sessionService->forgetQuestion($questionToGo);
 
         /*** @var PollUpdateData $poll */
-        $poll = $botService->sendPoll($this->getPollData($question));
+        $poll = $botService->sendPoll(
+            (new PollService($this->sessionService->getSession()))
+            ->getPollData($questionToGo)
+        );
 
-        $this->session->update([
-            'questions_to_go' => $poll->getQuestionsToGo()->pluck('id'),
-            'current_question' => $question->id,
-            'poll_id' => $poll->getQuestion()->poll_id
-        ]);
+        $this->sessionService->updateSession($poll->getPollId(), $questionToGo->id);
     }
 
-    protected function getPollData(Question $question): QuizData|PollData
-    {
-         return Collection::make($question->getCorrectAnswerIds())->count() > 1 ?
-             PollData::from([
-                 'chatId' => $this->session->getChatId(),
-                 'text' => $question->body,
-                 'options' => $question->getOptions(),
-                 'correctOptionIds' => $question->getcorrectAnswerIds(),
-                 'openPeriod' => (int) config('telegramBot.time_to_answer'),
-             ]) :
-             QuizData::from([
-                 'chatId' => $this->session->getChatId(),
-                 'text' => $question->getText(),
-                 'options' => $question->getOptions(),
-                 'correctOptionIds' => $question->getcorrectAnswerIds(),
-                 'openPeriod' => (int) config('telegramBot.time_to_answer'),
-             ]);
-    }
 }

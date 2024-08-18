@@ -2,7 +2,7 @@
 
 namespace App\Concerns;
 
-trait getsLastUpdateId
+trait GetsLastUpdateId
 {
 
     public function getLastUpdateId(): ?int

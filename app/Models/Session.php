@@ -18,15 +18,14 @@ class Session extends Model
 
     public function getQuestionsToGo(): Collection
     {
-        [1, 2, 3, 4];
-
-        [2];
         return collect($this->questions_to_go ?? []);
     }
 
-    public function getCurrentQuestion(): array
+    public function getCurrentQuestion(): CurrentQuestionDto
     {
-        return CurrentQuestionDto::from($this->current_question);
+        return CurrentQuestionDto::from([
+            'questionId' => $this->current_question
+        ]);
     }
 
     public function getChatId(): string

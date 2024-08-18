@@ -16,12 +16,6 @@ class QuestionService
      */
     public function createQuestion(QuestionData $questionData): Question
     {
-        //TODO Request пропускает вариант без указания правильных ответов хотя имеет свойство required в кастом request
-        //TODO Имеет ли здесь место эксепшн и нужен ли он тут
-        if (empty($questionData->correctAnswerIds)) {
-            throw new CorrectAnswerIsNotSet();
-        }
-
         return Question::create($questionData->toArray());
     }
 
@@ -30,10 +24,10 @@ class QuestionService
         return $question->update($questionData->toArray());
     }
 
-    public function getRandomQuestion(SessionModel $sessionModel): ?SessionModel
+    public function getRandomQuestion(SessionModel $sessionModel): Question
     {
         $sessionQuestions = $sessionModel->getQuestionsToGo();
-        return $sessionQuestions->shuffle()->first();
+        return Question::find($sessionQuestions->shuffle()->first());
     }
 
 }

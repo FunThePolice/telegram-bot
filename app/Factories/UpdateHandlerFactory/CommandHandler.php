@@ -41,7 +41,7 @@ class CommandHandler implements IUpdateHandler
     {
         Session::create([
             'chat_id' => $this->commandData->getChatId(),
-            'questions_to_go' => Question::all(),
+            'questions_to_go' => Question::pluck('id'),
         ]);
     }
 

@@ -2,15 +2,25 @@
 
 namespace App\Data\Models;
 
+use App\Models\Question;
 use Spatie\LaravelData\Data;
 
 class CurrentQuestionDto extends Data
 {
-    public array $correctIds;
-    public string $question;
+
+    public ?Question $question;
+
+    public int $questionId;
 
     public function getCorrectIds(): array
     {
-        return array_filter($this->correctIds, 'intval');
+        return array_map('intval', $this->question->correct_answer);
     }
+
+    public function getQuestion()
+    {
+        $this->question = Question::find($this->questionId);
+        return $this;
+    }
+
 }

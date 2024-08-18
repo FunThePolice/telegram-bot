@@ -8,7 +8,7 @@ use App\Models\Session;
 
 class AnswerService
 {
-    public function create(PollAnswerData $pollAnswerData)
+    public function create(PollAnswerData $pollAnswerData): void
     {
         $session = $this->getCurrentPollById($pollAnswerData->getPollId());
 
@@ -26,7 +26,7 @@ class AnswerService
 
     protected function isCorrectAnswer(PollAnswerData $pollAnswerData, Session $session): bool
     {
-        return $session->getCurrentQuestion()->getCorrectIds() === $pollAnswerData->getOptionIds()->toArray();
+        return $session->getCurrentQuestion()->getQuestion()->getCorrectIds() === $pollAnswerData->getOptionIds()->toArray();
     }
 
     protected function getCurrentPollById(int $pollId): ?Session

@@ -2,14 +2,14 @@
 
 namespace App\Factories\ResponseFactory;
 
-use App\Concerns\getsLastUpdateId;
+use App\Concerns\GetsLastUpdateId;
 use App\Contracts\IUpdateResponse;
 use App\Data\Responses\MessageUpdateData;
 use Illuminate\Support\Collection;
 
 class MessageUpdateResponse implements IUpdateResponse
 {
-    use getsLastUpdateId;
+    use GetsLastUpdateId;
 
     protected Collection $result;
 
