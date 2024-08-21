@@ -24,10 +24,9 @@ class QuestionService
         return $question->update($questionData->toArray());
     }
 
-    public function getRandomQuestion(SessionModel $sessionModel): Question
+    public function findById(int $id): Question
     {
-        $sessionQuestions = $sessionModel->getQuestionsToGo();
-        return Question::find($sessionQuestions->shuffle()->first());
+        return Question::find($id);
     }
 
 }

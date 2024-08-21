@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Data\Responses\PollUpdateData;
 use App\Models\Question;
 use App\Models\Session;
 use Illuminate\Support\Collection;
@@ -15,10 +16,19 @@ class SessionService
 
     protected ?Collection $questionsToGo = null;
 
+    protected QuestionService $questionService;
+    protected TelegramBotService $botService;
 
-    public function __construct(Session $session)
+
+    public function __construct(
+        Session $session,
+        QuestionService $questionService,
+        TelegramBotService $botService
+    )
     {
         $this->session = $session;
+        $this->questionService = $questionService;
+        $this->botService = $botService;
     }
 
     public function getCurrentQuestion(): ?Question
@@ -37,7 +47,7 @@ class SessionService
 
     public function forgetQuestion(Question $question): void
     {
-        $this->questionsToGo = $this->getQuestionsToGo()->filter(function (Question $questionToGo) use($question) {
+        $this->questionsToGo = $this->getQuestionsToGo()->filter(function (Question $questionToGo) use ($question) {
             return $questionToGo->id !== $question->id;
         });
     }
@@ -61,6 +71,29 @@ class SessionService
     public function getSession(): Session
     {
         return $this->session;
+    }
+
+    public function moveToNextQuestion()
+    {
+        $sessionQuestions = $this->getSession()->getQuestionsToGo();
+        $questionToGo = $this->questionService->findById(
+            $this->getRandomQuestion($sessionQuestions)
+        );
+
+        $this->forgetQuestion($questionToGo);
+
+        /*** @var PollUpdateData $poll */
+        $poll = $this->botService->sendPoll(
+            (new PollService($this->getSession()))
+                ->getPollData($questionToGo)
+        );
+
+        $this->updateSession($poll->getPollId(), $questionToGo->id);
+    }
+
+    protected function getRandomQuestion(Collection $questions)
+    {
+        return $questions->shuffle()->first();
     }
 
 }

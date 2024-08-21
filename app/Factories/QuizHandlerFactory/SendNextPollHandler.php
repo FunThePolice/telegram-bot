@@ -29,24 +29,9 @@ class SendNextPollHandler implements IQuizHandler
         $this->sessionService = $sessionService;
     }
 
-    /**
-     * @throws InvalidResponseTypeException
-     * @throws UpdateIsEmptyException
-     */
-    public function handle(TelegramBotService $botService): void
+    public function handle(): void
     {
-        /** @var QuestionService $questionService */
-        $questionService = app(QuestionService::class);
-        $questionToGo = $questionService->getRandomQuestion($this->sessionService->getSession());
-        $this->sessionService->forgetQuestion($questionToGo);
-
-        /*** @var PollUpdateData $poll */
-        $poll = $botService->sendPoll(
-            (new PollService($this->sessionService->getSession()))
-            ->getPollData($questionToGo)
-        );
-
-        $this->sessionService->updateSession($poll->getPollId(), $questionToGo->id);
+       $this->sessionService->moveToNextQuestion();
     }
 
 }
