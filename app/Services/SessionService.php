@@ -45,7 +45,11 @@ class SessionService
 
     public function getCurrentQuestion(): ?Question
     {
-        return $this->questionService->findById($this->session->current_question);
+        if ($this->session->current_question) {
+            return $this->questionService->findById($this->session->current_question);
+        }
+
+        return null;
     }
 
     public function getQuestionsToGo(): Collection
@@ -70,7 +74,7 @@ class SessionService
     protected function updateSession(int $pollId, int $questionId): void
     {
         $this->session->update([
-            'questions_to_go' => $this->getQuestionsToGo()->pluck('id'),
+            'questions_to_go' => $this->questionsToGo->pluck('id'),
             'current_question' => $questionId,
             'poll_id' => $pollId,
         ]);

@@ -8,6 +8,7 @@ use App\Exceptions\UpdateIsEmptyException;
 use App\Factories\UpdateHandlerFactory\UpdateHandlerFactory;
 use App\Services\TelegramBotService;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class TickChat extends Command
 {
@@ -42,7 +43,7 @@ class TickChat extends Command
         $handlerFactory = new UpdateHandlerFactory();
 
         try {
-            $handlerFactory->createHandler($updateResponse)->handle($botService);
+            $handlerFactory->createHandler($updateResponse)->handle();
         } catch (InvalidResponseTypeException $e) {
             return;
         }

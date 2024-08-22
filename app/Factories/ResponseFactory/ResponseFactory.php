@@ -13,10 +13,6 @@ class ResponseFactory implements IResponseFactory
     {
         $response = null;
 
-        if ($result->has('callback_query')) {
-            $response = new CallbackUpdateResponse($result);
-        }
-
         if ($result->has('message')) {
 
             $response = $this->isCommand($result) ?

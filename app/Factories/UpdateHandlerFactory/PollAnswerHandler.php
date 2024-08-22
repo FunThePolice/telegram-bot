@@ -10,18 +10,19 @@ use App\Services\TelegramBotService;
 class PollAnswerHandler implements IUpdateHandler
 {
 
+    protected AnswerRepository $answerRepository;
+
     protected PollAnswerData $answerData;
 
-    public function __construct(PollAnswerData $answerData)
+    public function __construct(AnswerRepository $answerRepository, PollAnswerData $answerData)
     {
+        $this->answerRepository = $answerRepository;
         $this->answerData = $answerData;
     }
 
-    public function handle(TelegramBotService $botService): void
+    public function handle(): void
     {
-        /** @var AnswerRepository $answerRepository */
-        $answerRepository = app(AnswerRepository::class);
-        $answerRepository->create($this->answerData);
+        $this->answerRepository->create($this->answerData);
     }
 
 }

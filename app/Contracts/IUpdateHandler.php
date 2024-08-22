@@ -7,6 +7,6 @@ use App\Services\TelegramBotService;
 interface IUpdateHandler
 {
 
-    public function handle(TelegramBotService $botService);
+    public function handle();
 
 }

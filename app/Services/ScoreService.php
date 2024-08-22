@@ -21,6 +21,7 @@ class ScoreService
             Score::create($score);
         });
     }
+
     public function getChatTopScoresRequest(string $chatId): MessageTextData
     {
         $this->getScores();
@@ -40,10 +41,10 @@ class ScoreService
     {
         return $this->scores->map(function ($score) {
             return sprintf('%s: %s/%s', $score->user_name, $score->score, $score->max_score);
-        });
+        })->implode(' , ');
     }
 
-    public function getPersonalizedScore(int $chatId)
+    protected function getPersonalizedScore(int $chatId)
     {
         $answers = Answer::where('chat_id', $chatId)->get();
         return $answers->groupBy('user_name')->map(function ($userAnswers, $userName) {
@@ -57,10 +58,10 @@ class ScoreService
             ];
         });
     }
-    protected function getScores(): ScoreService
+
+    protected function getScores(): Collection
     {
-        $this->scores = Score::orderBy('score', 'desc')->take(static::TOP_NUMBER)->get();
-        return $this;
+        return $this->scores = Score::orderBy('score', 'desc')->take(static::TOP_NUMBER)->get();
     }
 
     protected function isEmpty(): bool

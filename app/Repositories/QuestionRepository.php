@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Data\QuestionData;
 use App\Exceptions\CorrectAnswerIsNotSet;
 use App\Models\Question;
-use Illuminate\Support\Collection;
 
 class QuestionRepository
 {
@@ -29,9 +28,8 @@ class QuestionRepository
         return Question::find($id);
     }
 
-    public function findMultipleById(array $ids): Collection
+    public function getAllIds()
     {
-        return Question::whereIn('id', $ids)->get();
+        return Question::pluck('id');
     }
-
 }

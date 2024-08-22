@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Session;
 use App\Repositories\AnswerRepository;
 use App\Repositories\QuestionRepository;
+use App\Services\CommandService;
 use App\Services\ScoreService;
 use App\Services\SessionService;
 use App\Services\TelegramBotService;
@@ -35,6 +36,16 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(AnswerRepository::class)
             );
         });
+
+        $this->app->bind(CommandService::class, function ($app,$params) {
+            return new CommandService(
+                $params['commandData'],
+                $app->make(TelegramBotService::class),
+                $app->make(QuestionRepository::class),
+                $app->make(ScoreService::class),
+            );
+        });
+
     }
 
     /**
