@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
 use App\Data\Responses\PollAnswerData;
 use App\Models\Answer;
 use App\Models\Session;
 
-class AnswerService
+class AnswerRepository
 {
     public function create(PollAnswerData $pollAnswerData): void
     {
@@ -33,4 +33,10 @@ class AnswerService
     {
         return Session::where('poll_id', $pollId)->get()->first();
     }
+
+    public function deleteByChatId(int $chatId): void
+    {
+        Answer::where('chat_id', $chatId)->delete();
+    }
+
 }

@@ -3,13 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Exceptions\QuizHandlerFactoryConditionsAreNotMet;
-use App\Exceptions\QuizSessionDataIsCorrupted;
 use App\Factories\QuizHandlerFactory\QuizHandlerFactory;
 use App\Models\Session;
-use App\Services\Poll;
+use App\Repositories\QuestionRepository;
 use App\Services\SessionService;
 use App\Services\TelegramBotService;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class PollTimer extends Command
 {
@@ -32,7 +32,7 @@ class PollTimer extends Command
     /**
      * Execute the console command.
      */
-    public function handle(TelegramBotService $botService): void
+    public function handle(): void
     {
         $sessions = Session::all();
 
@@ -43,9 +43,13 @@ class PollTimer extends Command
         foreach ($sessions as $session) {
 
             try {
-                (new QuizHandlerFactory())->createHandler(new SessionService($session))->handle($botService);
+                (new QuizHandlerFactory())
+                    ->createHandler(
+                        app()->makeWith(SessionService::class, ['session' => $session])
+                    )->handle();
             } catch (QuizHandlerFactoryConditionsAreNotMet $e) {
                 return;
+            } catch (BindingResolutionException $e) {
             }
 
         }

@@ -6,8 +6,8 @@ use App\Data\QuestionData;
 use App\Exceptions\CorrectAnswerIsNotSet;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
+use App\Repositories\QuestionRepository;
 use App\Services\FileService;
-use App\Services\QuestionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -25,7 +25,7 @@ class QuestionController extends Controller
      * @throws CorrectAnswerIsNotSet
      * @throws ValidationException
      */
-    public function create(QuestionRequest $request, QuestionService $questionServices): RedirectResponse
+    public function create(QuestionRequest $request, QuestionRepository $questionServices): RedirectResponse
     {
         $question = $questionServices->createQuestion(QuestionData::from($request->validated()));
 
@@ -43,7 +43,7 @@ class QuestionController extends Controller
         return view('edit-question', compact('question', 'answers', 'correctAnswers'));
     }
 
-    public function update(QuestionRequest $request, Question $question, QuestionService $questionService): RedirectResponse
+    public function update(QuestionRequest $request, Question $question, QuestionRepository $questionService): RedirectResponse
     {
         $questionService->updateQuestion($question, QuestionData::from($request->validated()));
 

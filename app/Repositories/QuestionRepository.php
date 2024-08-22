@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
 use App\Data\QuestionData;
 use App\Exceptions\CorrectAnswerIsNotSet;
 use App\Models\Question;
-use App\Models\Session as SessionModel;
+use Illuminate\Support\Collection;
 
-class QuestionService
+class QuestionRepository
 {
     /**
      * @param QuestionData $questionData
@@ -27,6 +27,11 @@ class QuestionService
     public function findById(int $id): Question
     {
         return Question::find($id);
+    }
+
+    public function findMultipleById(array $ids): Collection
+    {
+        return Question::whereIn('id', $ids)->get();
     }
 
 }

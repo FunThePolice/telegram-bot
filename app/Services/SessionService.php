@@ -3,8 +3,12 @@
 namespace App\Services;
 
 use App\Data\Responses\PollUpdateData;
+use App\Exceptions\InvalidResponseTypeException;
+use App\Exceptions\UpdateIsEmptyException;
 use App\Models\Question;
 use App\Models\Session;
+use App\Repositories\AnswerRepository;
+use App\Repositories\QuestionRepository;
 use Illuminate\Support\Collection;
 
 class SessionService
@@ -16,36 +20,40 @@ class SessionService
 
     protected ?Collection $questionsToGo = null;
 
-    protected QuestionService $questionService;
+    protected QuestionRepository $questionService;
     protected TelegramBotService $botService;
+
+    protected ScoreService $scoreService;
+
+    protected AnswerRepository $answerService;
 
 
     public function __construct(
-        Session $session,
-        QuestionService $questionService,
-        TelegramBotService $botService
+        Session            $session,
+        QuestionRepository $questionService,
+        TelegramBotService $botService,
+        ScoreService       $scoreService,
+        AnswerRepository   $answerService
     )
     {
         $this->session = $session;
         $this->questionService = $questionService;
         $this->botService = $botService;
+        $this->scoreService = $scoreService;
+        $this->answerService = $answerService;
     }
 
     public function getCurrentQuestion(): ?Question
     {
-        return Question::find($this->session->current_question);
+        return $this->questionService->findById($this->session->current_question);
     }
 
     public function getQuestionsToGo(): Collection
     {
-        if (!$this->questionsToGo) {
-            $this->questionsToGo = Question::whereIn('id', $this->session->questions_to_go)->get();
-        }
-
-        return $this->questionsToGo;
+        return $this->questionsToGo = Question::whereIn('id', $this->session->questions_to_go)->get();
     }
 
-    public function forgetQuestion(Question $question): void
+    protected function forgetQuestion(Question $question): void
     {
         $this->questionsToGo = $this->getQuestionsToGo()->filter(function (Question $questionToGo) use ($question) {
             return $questionToGo->id !== $question->id;
@@ -59,7 +67,7 @@ class SessionService
             ->isPast();
     }
 
-    public function updateSession(int $pollId, int $questionId): void
+    protected function updateSession(int $pollId, int $questionId): void
     {
         $this->session->update([
             'questions_to_go' => $this->getQuestionsToGo()->pluck('id'),
@@ -73,7 +81,11 @@ class SessionService
         return $this->session;
     }
 
-    public function moveToNextQuestion()
+    /**
+     * @throws InvalidResponseTypeException
+     * @throws UpdateIsEmptyException
+     */
+    public function moveToNextQuestion(): void
     {
         $sessionQuestions = $this->getSession()->getQuestionsToGo();
         $questionToGo = $this->questionService->findById(
@@ -89,6 +101,22 @@ class SessionService
         );
 
         $this->updateSession($poll->getPollId(), $questionToGo->id);
+    }
+
+
+    /**
+     * @throws InvalidResponseTypeException
+     * @throws UpdateIsEmptyException
+     */
+    public function finishQuiz(): void
+    {
+        $chatId = $this->getSession()->getChatId();
+        $this->scoreService->saveScores($chatId);
+
+        $this->botService->sendMessage($this->scoreService->getChatTopScoresRequest($chatId));
+
+        $this->answerService->deleteByChatId($chatId);
+        $this->session->delete();
     }
 
     protected function getRandomQuestion(Collection $questions)

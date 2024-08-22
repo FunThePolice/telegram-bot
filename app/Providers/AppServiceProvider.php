@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Session;
+use App\Repositories\AnswerRepository;
+use App\Repositories\QuestionRepository;
+use App\Services\ScoreService;
+use App\Services\SessionService;
 use App\Services\TelegramBotService;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +23,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TelegramBotService::class, function () {
             return new TelegramBotService(
                 new Client(['base_uri' => 'https://api.telegram.org/bot' . config('telegramBot.token') . '/'])
+            );
+        });
+
+        $this->app->bind(SessionService::class, function ($app,$params) {
+            return new SessionService(
+                $params['session'],
+                $app->make(QuestionRepository::class),
+                $app->make(TelegramBotService::class),
+                $app->make(ScoreService::class),
+                $app->make(AnswerRepository::class)
             );
         });
     }

@@ -4,9 +4,7 @@ namespace App\Factories\UpdateHandlerFactory;
 
 use App\Contracts\IUpdateHandler;
 use App\Data\Responses\PollAnswerData;
-use App\Models\Answer;
-use App\Models\Session;
-use App\Services\AnswerService;
+use App\Repositories\AnswerRepository;
 use App\Services\TelegramBotService;
 
 class PollAnswerHandler implements IUpdateHandler
@@ -21,9 +19,9 @@ class PollAnswerHandler implements IUpdateHandler
 
     public function handle(TelegramBotService $botService): void
     {
-        /** @var AnswerService $answerService */
-        $answerService = app(AnswerService::class);
-        $answerService->create($this->answerData);
+        /** @var AnswerRepository $answerRepository */
+        $answerRepository = app(AnswerRepository::class);
+        $answerRepository->create($this->answerData);
     }
 
 }
